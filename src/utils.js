@@ -4,5 +4,5 @@ function mergeSet(set1, set2) {
 }
 
 module.exports = {
-  mergeSet
+  mergeSet,
 }

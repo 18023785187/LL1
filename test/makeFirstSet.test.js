@@ -12,7 +12,7 @@ describe('test makeFirstSet.js', () => {
   })
 
   test('expressions', () => {
-    const rules = splitExpressions([
+    const rules1 = splitExpressions([
       'E -> T E1',
       'E1 -> + T E1 | null',
       'T -> F T1',
@@ -20,13 +20,34 @@ describe('test makeFirstSet.js', () => {
       'F -> ( E ) | id'
     ])
 
-    const firstSet = makeFirstSet(rules, ['+', '*', '(', 'id', ')'])
-    expect(firstSet).toEqual({
+    const firstSet1 = makeFirstSet(rules1, ['+', '*', '(', 'id', ')'])
+    expect(firstSet1).toEqual({
       'E': ['(', 'id'],
       'E1': ['+', null],
       'T': ['(', 'id'],
       'T1': ['*', null],
       'F': ['(', 'id']
+    })
+
+    const rules2 = splitExpressions([
+      'E -> T E1',
+      'E1 -> + E | null',
+      'T -> F T1',
+      'T1 -> T | null',
+      'F -> P F1',
+      'F1 -> * F1 | null',
+      'P -> ( E ) | a | b | ^'
+    ])
+
+    const firstSet2 = makeFirstSet(rules2, ['+', '*', '(', ')', 'a', 'b', '^'])
+    expect(firstSet2).toEqual({
+      'E': ['(', 'a', 'b', '^'],
+      'E1': ['+', null],
+      'T': ['(', 'a', 'b', '^'],
+      'T1': [null, '(', 'a', 'b', '^'],
+      'F': ['(', 'a', 'b', '^'],
+      'F1': ['*', null],
+      'P': ['(', 'a', 'b', '^']
     })
   })
 

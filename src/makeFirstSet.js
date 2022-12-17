@@ -1,6 +1,5 @@
 const { mergeSet } = require('./utils')
-
-const EMPTY_CHAIN = null
+const { EMPTY_CHAIN } = require('./contants')
 
 /**
   1、依次遍历所有产生式，把串首终结符加入其 FIRST 集中。
@@ -20,6 +19,7 @@ function makeFirstSet(rules, terminalSymbols) {
       let set = new Set(firstSet[left])
       const prevLength = set.size
 
+      // 处理诸如 E -> A | B 的情况需要遍历
       right.forEach(exp => {
         let first = 0
         let chain = exp[first]

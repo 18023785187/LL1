@@ -1,0 +1,15 @@
+{
+  "name": "ll1",
+  "version": "1.0.0",
+  "description": "根据产生式求取 First、Follow、Select 集",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "jest": "^29.3.1"
+  }
+}

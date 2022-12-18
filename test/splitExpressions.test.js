@@ -1,17 +1,18 @@
 const splitExpressions = require('../src/splitExpressions')
+const { EMPTY_CHAIN } = require('../src/contants')
 
 describe('test splitExpressions.js', () => {
   test('single expression', () => {
-    const rules = ['E -> ( id ) | null']
+    const expressions = ['E -> ( id ) | null']
 
-    const expressions = splitExpressions(rules)
-    expect(expressions).toEqual(
+    const rules = splitExpressions(expressions)
+    expect(rules).toEqual(
       [
         {
           left: 'E',
           right: [
             ['(', 'id', ')'],
-            [null]
+            [EMPTY_CHAIN]
           ]
         }
       ]
@@ -19,13 +20,13 @@ describe('test splitExpressions.js', () => {
   })
 
   test('not right', () => {
-    const rules = ['E -> ']
+    const expressions = ['E -> ']
 
-    expect(() => splitExpressions(rules)).toThrow(Error)
+    expect(() => splitExpressions(expressions)).toThrow(Error)
   })
 
   test('expressions', () => {
-    const rules1 = [
+    const expressions1 = [
       'E -> T E1',
       'E1 -> + T E1 | null',
       'T -> F T1',
@@ -33,8 +34,8 @@ describe('test splitExpressions.js', () => {
       'F -> ( E ) | id'
     ]
 
-    const expressions1 = splitExpressions(rules1)
-    expect(expressions1).toEqual(
+    const rules1 = splitExpressions(expressions1)
+    expect(rules1).toEqual(
       [
         {
           left: 'E',
@@ -42,7 +43,7 @@ describe('test splitExpressions.js', () => {
         },
         {
           left: 'E1',
-          right: [['+', 'T', 'E1'], [null]]
+          right: [['+', 'T', 'E1'], [EMPTY_CHAIN]]
         },
         {
           left: 'T',
@@ -50,7 +51,7 @@ describe('test splitExpressions.js', () => {
         },
         {
           left: 'T1',
-          right: [['*', 'F', 'T1'], [null]]
+          right: [['*', 'F', 'T1'], [EMPTY_CHAIN]]
         },
         {
           left: 'F',
@@ -59,15 +60,15 @@ describe('test splitExpressions.js', () => {
       ]
     )
 
-    const rules2 = [
+    const expressions2 = [
       'A -> B C',
       'B -> D | null',
       'C -> +',
       'D -> id'
     ]
 
-    const expressions2 = splitExpressions(rules2)
-    expect(expressions2).toEqual(
+    const rules2 = splitExpressions(expressions2)
+    expect(rules2).toEqual(
       [
         {
           left: 'A',
@@ -75,7 +76,7 @@ describe('test splitExpressions.js', () => {
         },
         {
           left: 'B',
-          right: [['D'], [null]]
+          right: [['D'], [EMPTY_CHAIN]]
         },
         {
           left: 'C',

@@ -1,4 +1,4 @@
-const makeFollowSet = require('../src/makeFollowSet')
+const { makeFollowSet } = require('../src/makeFollowSet')
 const splitExpressions = require('../src/splitExpressions')
 const { $ } = require('../src/contants')
 

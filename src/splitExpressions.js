@@ -1,3 +1,4 @@
+const { EMPTY_CHAIN } = require('./contants')
 
 /**
  * 生成式必须以空格作为分隔符，以 | 作为或，以 null 作为空串
@@ -26,7 +27,7 @@ function splitExpressions(rules) {
 
       if(char === ' ') {
         if(str === 'null') {
-          fragment.push(null)
+          fragment.push(EMPTY_CHAIN)
         } else if(str) {
           fragment.push(str)
         }

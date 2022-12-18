@@ -16,34 +16,34 @@ function makeFirstSet(rules, terminalSymbols) {
   do {
     isSetChanged = false
     rules.forEach(({ left, right }) => {
-      let set = new Set(firstSet[left])
-      const prevLength = set.size
+      let sets = new Set(firstSet[left])
+      const prevLength = sets.size
 
       // 处理诸如 E -> A | B 的情况需要遍历
       right.forEach(exp => {
         let first = 0
         let chain = exp[first]
 
-        if (isTerminal(chain)) set.add(chain)
+        if (isTerminal(chain)) sets.add(chain)
         else if (firstSet[chain].includes(EMPTY_CHAIN)) {
 
           do {
             const nextSet = new Set(firstSet[chain])
             nextSet.delete(EMPTY_CHAIN)
-            set = mergeSet(set, nextSet)
+            sets = mergeSet(sets, nextSet)
             first += 1
             chain = exp[first]
 
           } while (firstSet[chain]?.includes(EMPTY_CHAIN))
 
-          if (isTerminal(chain)) set.add(chain)
-          else set = mergeSet(set, firstSet[chain])
+          if (isTerminal(chain)) sets.add(chain)
+          else sets = mergeSet(sets, firstSet[chain])
         }
-        else set = mergeSet(set, firstSet[chain])
+        else sets = mergeSet(sets, firstSet[chain])
       })
 
-      firstSet[left] = [...set]
-      if (prevLength !== set.size) isSetChanged = true
+      firstSet[left] = [...sets]
+      if (prevLength !== sets.size) isSetChanged = true
     })
 
   } while (isSetChanged)
@@ -51,4 +51,23 @@ function makeFirstSet(rules, terminalSymbols) {
   return firstSet
 }
 
-module.exports = makeFirstSet
+function makeUnionFirstSet(chainSet, firstSet, terminalSymbols) {
+  const isTerminal = (chain) => terminalSymbols.includes(chain) || chain === EMPTY_CHAIN
+
+  const unionFirstSet = []
+
+  chainSet.some(chain => {
+    if(isTerminal(chain)) {
+      unionFirstSet.push(chain)
+    } else if(!firstSet[chain].includes(EMPTY_CHAIN)) {
+      unionFirstSet.push(...firstSet[chain])
+    } else {
+      return false
+    }
+    return true
+  })
+
+  return unionFirstSet
+}
+
+module.exports = { makeFirstSet, makeUnionFirstSet }

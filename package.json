@@ -1,7 +1,7 @@
 {
   "name": "ll1",
   "version": "1.0.0",
-  "description": "根据产生式求取 First、Follow、Select 集",
+  "description": "根据产生式求取 First、Follow、Select 集和预测分析表",
   "main": "index.js",
   "scripts": {
     "test": "jest"

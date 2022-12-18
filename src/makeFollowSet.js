@@ -1,4 +1,4 @@
-const makeFirstSet = require('./makeFirstSet')
+const { makeFirstSet } = require('./makeFirstSet')
 const { mergeSet } = require('./utils')
 const { EMPTY_CHAIN, $ } = require('./contants')
 
@@ -15,14 +15,16 @@ const { EMPTY_CHAIN, $ } = require('./contants')
   2、依次遍历产生式，依序遍历产生式右边，对每个串运用规则。
   3、重复执行步骤 2，直至所有产生式均无变化。
  */
-function makeFollowSet(rules, terminalSymbols) {
+function makeFollowSet(
+  rules,
+  terminalSymbols,
+  firstSet = makeFirstSet(rules, terminalSymbols)
+) {
   const isTerminal = (chain) => terminalSymbols.includes(chain) || chain === EMPTY_CHAIN
 
   const followSet = {}
   rules.forEach(({ left }) => followSet[left] = [])
   followSet[rules[0].left].push($)
-
-  const firstSet = makeFirstSet(rules, terminalSymbols)
 
   const emptySet = new Set()
   for (const tag in firstSet) firstSet[tag].includes(EMPTY_CHAIN) && emptySet.add(tag)
@@ -66,4 +68,4 @@ function makeFollowSet(rules, terminalSymbols) {
   return followSet
 }
 
-module.exports = makeFollowSet
+module.exports = { makeFollowSet }

@@ -1,5 +1,5 @@
 const { makeFirstSet, makeUnionFirstSet } = require('../src/makeFirstSet')
-const splitExpressions = require('../src/splitExpressions')
+const { splitExpressions } = require('../src/splitExpressions')
 const { EMPTY_CHAIN } = require('../src/contants')
 
 describe('test makeFirstSet.js', () => {

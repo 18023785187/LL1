@@ -1,5 +1,5 @@
 const { makeSelectSet, isNotIntersect } = require('../src/makeSelectSet')
-const splitExpressions = require('../src/splitExpressions')
+const { splitExpressions } = require('../src/splitExpressions')
 const { $, EMPTY_CHAIN } = require('../src/contants')
 
 describe('test makeSelectSet.js', () => {

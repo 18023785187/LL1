@@ -33,3 +33,50 @@ ll1.print()
 |  F          |  -> ( E )   |  -> id      |             |             |             |             |
 |-------------|-------------|-------------|-------------|-------------|-------------|-------------|
 ```
+
+#### API
+
+###### makeLL1(expressions, terminalSymbols)
+
+  根据产生式和指定终止符返回 firstSet, followSet, selectSet, predictSet 和 print 方法。
+
+###### splitExpressions(expressions)
+
+  根据产生式生成 rules 数组。
+
+###### combineLikeTerms(rules)
+
+  配合 splitExpressions 使用，提取公共因子。
+
+###### makeFirstSet(rules, terminalSymbols)
+
+  生成 first 集。
+
+###### makeUnionFirstSet(chainSet, firstSet, terminalSymbols)
+
+  求解多个 first 集并集。
+
+###### makeFollowSet(rules, terminalSymbols, firstSet?)
+
+  生成 followSet 集，如果不传入 firstSet 参数将自动根据 rules、terminalSymbols 生成 first 集。
+
+###### makeSelectSet(rules, terminalSymbols, firstSet?, follow?)
+
+  生成 followSet 集，如果不传入 firstSet、follow 参数将自动根据 rules、terminalSymbols 生成 first、follow 集。
+
+###### isNotIntersect(selectSet)
+
+  给定 select 集判断该 select 集是否没有交集。
+
+###### makePredictSet(selectSet)
+
+  生成预测分析表。
+
+###### EMPTY_CHAIN
+
+  空集常数。
+
+###### $
+
+  终止符常数。
+  

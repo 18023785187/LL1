@@ -13,7 +13,6 @@ describe('test index.js', () => {
     const terminalSymbols = ['+', '*', '(', 'id', ')']
 
     const ll1 = makeLL1(expressions, terminalSymbols)
-    ll1.print()
 
     expect(ll1.firstSet).toEqual({
       'E': ['(', 'id'],
@@ -115,5 +114,26 @@ describe('test index.js', () => {
         ]
       ])
     )
+  })
+
+  test('print', () => {
+    const expressions = [
+      'E -> T E1', 
+      'E1 -> A T E1',
+      'E1 -> null',
+      'T -> F T1',
+      'T1 -> M F T1',
+      'T1 -> null',
+      'F -> ( E )',
+      'F -> id',
+      'A -> +',
+      'A -> -',
+      'M -> *',
+      'M -> /'
+    ]
+    const terminalSymbols = ['+', '-', '*', '/', '(', 'id', ')']
+
+    const ll1 = makeLL1(expressions, terminalSymbols)
+    ll1.print()
   })
 })

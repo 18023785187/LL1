@@ -1,6 +1,6 @@
 const { makeSelectSet } = require('../src/makeSelectSet')
 const { makePredictSet } = require('../src/makePredictSet')
-const splitExpressions = require('../src/splitExpressions')
+const { splitExpressions } = require('../src/splitExpressions')
 const { $, EMPTY_CHAIN } = require('../src/contants')
 
 describe('test makePredictSets.js', () => {
@@ -56,7 +56,7 @@ describe('test makePredictSets.js', () => {
         [
           '*',
           new Map([
-            ['T1', [ '*', 'F', 'T1' ]]
+            ['T1', ['*', 'F', 'T1']]
           ])
         ]
       ])

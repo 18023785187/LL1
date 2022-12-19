@@ -1,6 +1,6 @@
 "use strict";
 
-const splitExpressions = require('./splitExpressions')
+const { splitExpressions, combineLikeTerms } = require('./splitExpressions')
 const { makeFirstSet, makeUnionFirstSet } = require('./makeFirstSet')
 const { makeFollowSet } = require('./makeFollowSet')
 const { makeSelectSet, isNotIntersect } = require('./makeSelectSet')
@@ -85,6 +85,7 @@ function makeLL1(expressions, terminalSymbols) {
 module.exports = {
   makeLL1,
   splitExpressions,
+  combineLikeTerms,
   makeFirstSet,
   makeUnionFirstSet,
   makeFollowSet,

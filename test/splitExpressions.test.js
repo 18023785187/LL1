@@ -1,11 +1,11 @@
-const { splitExpressions, combineLikeTerms } = require('../src/splitExpressions')
-const { EMPTY_CHAIN } = require('../src/contants')
+const { splitExpressions, toExpressions, combineLikeTerms, clearLeftRecursion } = require('../src/splitExpressions');
+const { EMPTY_CHAIN } = require('../src/contants');
 
 describe('test splitExpressions.js', () => {
   test('single expression', () => {
-    const expressions1 = ['E -> ( id ) | null']
+    const expressions1 = ['E -> ( id ) | null'];
 
-    const rules1 = splitExpressions(expressions1)
+    const rules1 = splitExpressions(expressions1);
     expect(rules1).toEqual(
       [
         {
@@ -16,11 +16,11 @@ describe('test splitExpressions.js', () => {
           ]
         }
       ]
-    )
+    );
 
-    const expressions2 = ['E -> a A | + | a c A | a c B']
+    const expressions2 = ['E -> a A | + | a c A | a c B'];
 
-    const rules2 = splitExpressions(expressions2)
+    const rules2 = splitExpressions(expressions2);
     expect(combineLikeTerms(rules2)).toEqual(
       [
         {
@@ -45,11 +45,11 @@ describe('test splitExpressions.js', () => {
           ]
         }
       ]
-    )
+    );
 
-    const expressions3 = ['E -> + a | + b | * c | * d | y']
+    const expressions3 = ['E -> + a | + b | * c | * d | y'];
 
-    const rules3 = splitExpressions(expressions3)
+    const rules3 = splitExpressions(expressions3);
     expect(combineLikeTerms(rules3)).toEqual(
       [
         {
@@ -75,11 +75,11 @@ describe('test splitExpressions.js', () => {
           ]
         }
       ]
-    )
+    );
 
-    const expressions4 = ['E -> a b A |  a b B']
+    const expressions4 = ['E -> a b A |  a b B'];
 
-    const rules4 = splitExpressions(expressions4)
+    const rules4 = splitExpressions(expressions4);
     expect(combineLikeTerms(rules4)).toEqual(
       [
         {
@@ -96,11 +96,11 @@ describe('test splitExpressions.js', () => {
           ]
         }
       ]
-    )
+    );
 
-    const expressions5 = ['E -> a b A |  a b']
+    const expressions5 = ['E -> a b A |  a b'];
 
-    const rules5 = splitExpressions(expressions5)
+    const rules5 = splitExpressions(expressions5);
     expect(combineLikeTerms(rules5)).toEqual(
       [
         {
@@ -117,11 +117,11 @@ describe('test splitExpressions.js', () => {
           ]
         }
       ]
-    )
+    );
 
-    const expressions6 = ['E -> a A | a B | b A | b B']
+    const expressions6 = ['E -> a A | a B | b A | b B'];
 
-    const rules6 = splitExpressions(expressions6)
+    const rules6 = splitExpressions(expressions6);
     expect(combineLikeTerms(rules6)).toEqual(
       [
         {
@@ -139,11 +139,11 @@ describe('test splitExpressions.js', () => {
           ]
         }
       ]
-    )
+    );
 
-    const expressions7 = ['S -> a A c | a B d | c C | d']
+    const expressions7 = ['S -> a A c | a B d | c C | d'];
 
-    const rules7 = splitExpressions(expressions7)
+    const rules7 = splitExpressions(expressions7);
     expect(combineLikeTerms(rules7)).toEqual(
       [
         {
@@ -162,11 +162,11 @@ describe('test splitExpressions.js', () => {
           ]
         }
       ]
-    )
+    );
 
-    const expressions8 = ['S -> a a B | a a a C | a a a D']
+    const expressions8 = ['S -> a a B | a a a C | a a a D'];
 
-    const rules8 = splitExpressions(expressions8)
+    const rules8 = splitExpressions(expressions8);
     expect(combineLikeTerms(rules8)).toEqual(
       [
         {
@@ -190,14 +190,86 @@ describe('test splitExpressions.js', () => {
           ]
         }
       ]
-    )
-  })
+    );
+
+    const expressions9 = ['G -> G r | G apple | time | good | a | have'];
+
+    const rules9 = splitExpressions(expressions9);
+    expect(toExpressions(clearLeftRecursion(rules9))).toEqual(
+      [
+        'G -> time G` | good G` | a G` | have G`',
+        'G` -> r G` | apple G` | null'
+      ]
+    );
+
+    const expressions10 = ['A -> A c | A a d | b d | null'];
+
+    const rules10 = splitExpressions(expressions10);
+    expect(toExpressions(clearLeftRecursion(rules10))).toEqual(
+      [
+        'A -> b d A` | A`',
+        'A` -> c A` | a d A` | null'
+      ]
+    );
+
+    const expressions11 = ['E -> E + T | T'];
+
+    const rules11 = splitExpressions(expressions11);
+    expect(toExpressions(clearLeftRecursion(rules11))).toEqual(
+      [
+        'E -> T E`',
+        'E` -> + T E` | null'
+      ]
+    );
+
+    const expressions12 = ['A -> A + | A * | A / | null'];
+
+    const rules12 = splitExpressions(expressions12);
+    expect(toExpressions(clearLeftRecursion(rules12))).toEqual(
+      [
+        'A -> A`',
+        'A` -> + A` | * A` | / A` | null'
+      ]
+    );
+  });
 
   test('not right', () => {
-    const expressions = ['E -> ']
+    const expressions = ['E -> '];
 
-    expect(() => splitExpressions(expressions)).toThrow(Error)
-  })
+    expect(() => splitExpressions(expressions)).toThrow(Error);
+  });
+
+  test('toExpressions', () => {
+    const expressions1 = [
+      'E -> a A | + | a b B | a b C',
+      'D -> B | C',
+    ];
+
+    const rules1 = splitExpressions(expressions1);
+    expect(toExpressions(rules1)).toEqual(expressions1);
+
+    const expressions2 = [
+      'E -> a A | + | a b B | a b C',
+      'D -> B | C',
+    ];
+
+    const rules2 = splitExpressions(expressions2);
+    expect(toExpressions(rules2, true)).toEqual([
+      'E -> a A',
+      'E -> +',
+      'E -> a b B',
+      'E -> a b C',
+      'D -> B',
+      'D -> C'
+    ]);
+
+    const expressions3 = [
+      'E -> null'
+    ];
+
+    const rules3 = splitExpressions(expressions3);
+    expect(toExpressions(rules3)).toEqual(expressions3);
+  });
 
   test('expressions', () => {
     const expressions1 = [
@@ -206,9 +278,9 @@ describe('test splitExpressions.js', () => {
       'T -> F T1',
       'T1 -> * F T1 | null',
       'F -> ( E ) | id'
-    ]
+    ];
 
-    const rules1 = splitExpressions(expressions1)
+    const rules1 = splitExpressions(expressions1);
     expect(rules1).toEqual(
       [
         {
@@ -232,16 +304,16 @@ describe('test splitExpressions.js', () => {
           right: [['(', 'E', ')'], ['id']]
         }
       ]
-    )
+    );
 
     const expressions2 = [
       'A -> B C',
       'B -> D | null',
       'C -> +',
       'D -> id'
-    ]
+    ];
 
-    const rules2 = splitExpressions(expressions2)
+    const rules2 = splitExpressions(expressions2);
     expect(rules2).toEqual(
       [
         {
@@ -261,14 +333,14 @@ describe('test splitExpressions.js', () => {
           right: [['id']]
         }
       ]
-    )
+    );
 
     const expressions3 = [
       'A -> id',
       'A -> null'
-    ]
+    ];
 
-    const rules3 = splitExpressions(expressions3)
+    const rules3 = splitExpressions(expressions3);
     expect(rules3).toEqual(
       [
         {
@@ -276,7 +348,7 @@ describe('test splitExpressions.js', () => {
           right: [['id'], [null]]
         }
       ]
-    )
+    );
 
     const expressions4 = [
       'E -> T E1',
@@ -287,9 +359,9 @@ describe('test splitExpressions.js', () => {
       'T1 -> null',
       'F -> ( E )',
       'F -> id'
-    ]
+    ];
 
-    const rules4 = splitExpressions(expressions4)
+    const rules4 = splitExpressions(expressions4);
     expect(rules4).toEqual(
       [
         {
@@ -313,15 +385,15 @@ describe('test splitExpressions.js', () => {
           right: [['(', 'E', ')'], ['id']]
         }
       ]
-    )
+    );
 
     const expressions5 = [
       'S -> ( T ) | a + S | a',
       'T -> S T1',
       'T1 -> , S T1 | null'
-    ]
+    ];
 
-    const rules5 = splitExpressions(expressions5)
+    const rules5 = splitExpressions(expressions5);
     expect(combineLikeTerms(rules5)).toEqual(
       [
         {
@@ -352,15 +424,15 @@ describe('test splitExpressions.js', () => {
           ]
         }
       ]
-    )
+    );
 
     const expressions6 = [
       'S -> a F S1 | * a F S1',
       'S1 -> * a F S1 | null',
       'F -> + a F | + a'
-    ]
+    ];
 
-    const rules6 = splitExpressions(expressions6)
+    const rules6 = splitExpressions(expressions6);
     expect(combineLikeTerms(rules6)).toEqual(
       [
         {
@@ -391,15 +463,15 @@ describe('test splitExpressions.js', () => {
           ]
         }
       ]
-    )
+    );
 
     const expressions7 = [
       'S -> a S b',
       'S -> a S',
       'S -> null'
-    ]
+    ];
 
-    const rules7 = splitExpressions(expressions7)
+    const rules7 = splitExpressions(expressions7);
     expect(combineLikeTerms(rules7)).toEqual(
       [
         {
@@ -417,6 +489,65 @@ describe('test splitExpressions.js', () => {
           ]
         }
       ]
-    )
-  })
-})
+    );
+  });
+
+  test('all', () => {
+    const expressions1 = [
+      'Exp -> , A | + | , b77 ; | , b77 C',
+      'D -> ; | C',
+    ];
+
+    const rules1 = splitExpressions(expressions1);
+    expect(toExpressions(combineLikeTerms(rules1))).toEqual([
+      "Exp -> , Exp' | +",
+      "Exp' -> A | b77 D",
+      'D -> ; | C'
+    ]);
+
+    const expressions2 = [
+      'E -> a A | a B | b A B | b C D',
+      'F -> A | B',
+      'G -> A B | C D'
+    ];
+
+    const rules2 = splitExpressions(expressions2);
+    expect(toExpressions(combineLikeTerms(rules2))).toEqual([
+      "E -> a F | b G",
+      'F -> A | B',
+      'G -> A B | C D'
+    ]);
+
+    const expressions3 = [
+      'E -> a b A | a b B',
+      'C -> A | B'
+    ];
+
+    const rules3 = splitExpressions(expressions3);
+    expect(toExpressions(combineLikeTerms(rules3))).toEqual([
+      "E -> a b C",
+      'C -> A | B'
+    ]);
+
+    const expressions4 = [
+      'E -> a b A | a b B',
+    ];
+
+    const rules4 = splitExpressions(expressions4);
+    expect(toExpressions(combineLikeTerms(rules4))).toEqual([
+      "E -> a b E'",
+      "E' -> A | B"
+    ]);
+
+    const expressions5 = [
+      'Exp -> a Ax | a By | b Ax | b By',
+      'Type -> Ax | By'
+    ];
+
+    const rules5 = splitExpressions(expressions5);
+    expect(toExpressions(combineLikeTerms(rules5))).toEqual([
+      "Exp -> a Type | b Type",
+      'Type -> Ax | By'
+    ]);
+  });
+});

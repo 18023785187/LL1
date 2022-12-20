@@ -1,10 +1,10 @@
-const { EMPTY_CHAIN } = require('./contants');
+const { EMPTY_CHAIN, OR } = require('./contants');
 
 /**
  * 生成式必须以空格作为分隔符，以 | 作为或，以 null 作为空串
  * 
- * 如: 1、E -> ( id ) | null
- *     2、E -> ( id )   E -> null
+ * 如: 1、['E -> ( id ) | null']
+ *     2、['E -> ( id )', 'E -> null']
  * 
  * 无论使用哪种写法最后返回的都会合并成一项，即合并成第一种写法的格式
  */
@@ -57,6 +57,32 @@ function splitExpressions(expressions) {
   return rules;
 }
 
+function toExpressions(rules, isExpand = false) {
+  const expressions = [];
+
+  rules.forEach(({ left, right }) => {
+    if (isExpand) {
+      right.forEach(exp => {
+        let expression = '';
+
+        expression += `${left} -> ${exp.map(chain => chain + '').join(' ')}`;
+        expressions.push(expression);
+      });
+    } else {
+      let expression = '';
+
+      expression += `${left} -> `;
+      right.forEach(exp => {
+        expression += exp.map(chain => chain + '').join(' ') + ` ${OR} `;
+      });
+
+      expressions.push(expression.slice(0, -3));
+    }
+  });
+
+  return expressions;
+}
+
 /**
  * 基于 splitExpressions 方法返回的 rules 进行提取公共因子
  * 
@@ -72,17 +98,22 @@ function splitExpressions(expressions) {
  */
 function combineLikeTerms(rules) {
   const mergeRight = (right) => [...right.map(exp => [...exp])];
+  const rightToString = (right) => right.join(OR);
   const newRules = [];
+
+  const commonSuffix = new Map(); /** 复用已有产生式或提取公共因子后剩余后缀的产生式 */
+  rules.forEach(({ left, right }) => {
+    commonSuffix.set(rightToString(right), left);
+  });
 
   rules.forEach(({ left, right }) => {
     handleRule(left, right, new Map());
   });
 
-  function handleRule(left, right, commonSuffix /** 复用提取公共因子后剩余后缀的产生式 */) {
-    if(commonSuffix.has(right.join('|'))) return
-    commonSuffix.set(right.join('|'), left)
+  function handleRule(left, right) {
+    commonSuffix.set(rightToString(right), left);
 
-    let repeat = 0
+    let repeat = 0;
     let isInsertRoot = false; // 标记新产生式是否已推入 newRules
     const explanation = {
       left,
@@ -102,7 +133,7 @@ function combineLikeTerms(rules) {
       if (skips.includes(i)) continue;
       skips.push(i);
 
-      if(i === right.length - 1) {
+      if (i === right.length - 1) {
         explanation.right.push(right[i]);
         return;
       }
@@ -142,31 +173,36 @@ function combineLikeTerms(rules) {
         }
         if (!isEqualChain) break setPrefix;
 
-        prefix += chain + '|';
+        prefix += chain + OR;
         pos++;
       }
 
       if (prefix) {
         const suffixes = commonExps.map(exp => {
-          const suffix = exp.slice(prefix.length / 2);
-          if(!suffix.length) return [EMPTY_CHAIN]
+          const suffix = exp.slice(prefix.slice(0, -1).split(OR).length);
+          if (!suffix.length) return [EMPTY_CHAIN];
           return suffix;
         });
-        if(commonSuffix.has(suffixes.join('|'))) repeat--
 
-        const newLeft = `${left}${"'".repeat(repeat)}'`;
-        const newRight = [...prefix.slice(0, -1).split('|'), newLeft];
+        let newLeft;
+        if (commonSuffix.has(rightToString(suffixes))) {
+          newLeft = commonSuffix.get(rightToString(suffixes));
+        } else {
+          newLeft = `${left}${"'".repeat(repeat)}'`;
+        }
+        const newRight = [...prefix.slice(0, -1).split(OR), newLeft];
         explanation.right.push(newRight);
         if (!isInsertRoot) {
-          newRules.push(explanation)
-          repeat++
+          newRules.push(explanation);
+          repeat++;
         };
 
-        handleRule(newLeft, suffixes, commonSuffix);
+        if (!commonSuffix.has(rightToString(suffixes)))
+          handleRule(newLeft, suffixes);
       } else {
-        explanation.right.push([...right[i]])
+        explanation.right.push([...right[i]]);
         if (!isInsertRoot) {
-          newRules.push(explanation)
+          newRules.push(explanation);
         };
       }
       isInsertRoot = true;
@@ -175,4 +211,70 @@ function combineLikeTerms(rules) {
   return newRules;
 }
 
-module.exports = { splitExpressions, combineLikeTerms };
+/**
+ * 基于 splitExpressions 方法返回的 rules 进行消除左递归
+ * 
+ * 左递归分为直接左递归和间接左递归，直接左递归调用 clearDirectLeftRecursion 函数进行消除，间接左递归通过代入产生式降级为直接左递归进行消除，
+ * 为了与提取公共因子进行区分，消除左递归引入的新产生式用 ` 标记，如：E -> E + T 消除后得 E -> T E`  E` -> + T E` | null
+ * 
+ * A -> A a1 | A a2 | ... | A an | b1 | b2 | ... | bm
+ * 
+ * ---->
+ * 
+ *  A -> b1A` | b2A` | ... | bmA`
+ *  A' -> a1A` | a2A` | ... | anA` | null
+ * 
+ */
+function clearLeftRecursion(rules) {
+  const newRules = []
+
+  rules.forEach(rule => {
+    newRules.push(
+      ...clearDirectLeftRecursion(rule)
+    )
+  })
+
+  function clearDirectLeftRecursion(
+    { left, right } /** rule */
+  ) {
+    const rules = [];
+    const newLeft = `${left}\``;
+
+    const prefixExps = [];
+    const exps = [];
+    let isEmpty = false;
+    right.forEach(exp => {
+      if (exp[0] === left) {
+        exp.shift();
+        exp.push(newLeft);
+        prefixExps.push(exp);
+      } else if (exp[0] === EMPTY_CHAIN) {
+        isEmpty = true;
+      } else {
+        exp.push(newLeft);
+        exps.push(exp);
+      }
+    });
+
+    if (isEmpty) {
+      exps.push([newLeft]);
+    }
+
+    rules.push(
+      {
+        left,
+        right: [...exps]
+      },
+      {
+        left: newLeft,
+        right: [...prefixExps, [EMPTY_CHAIN]]
+      }
+    );
+
+    return rules;
+  }
+
+  return newRules
+}
+
+module.exports = { splitExpressions, toExpressions, combineLikeTerms, clearLeftRecursion };

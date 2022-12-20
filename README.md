@@ -36,17 +36,59 @@ ll1.print()
 
 #### API
 
+###### 类型
+
+```typescript
+type EMPTY_CHAIN = null
+type $ = '$'
+
+type expressions = string[][]
+
+type terminalSymbols = string[]
+
+type right = (string | EMPTY_CHAIN)[][]
+type $Set = (string | $)[][]
+
+type rule = {
+  left: string,
+  right: right
+}
+
+type rules = rule[]
+
+type firstSet = {
+  [k: string]: right
+}
+
+type followSet = {
+  [k: string]: $Set
+}
+
+type selectSet = Map<rule, string[][] | followSet>
+
+type predictSet = Map<string, Map<left, right>>
+```
+
 ###### makeLL1(expressions, terminalSymbols)
 
-  根据产生式和指定终止符返回 firstSet, followSet, selectSet, predictSet 和 print 方法。
+  根据产生式和指定终止符返回 startSymbol, firstSet, followSet, selectSet, predictSet 和 print 方法。
+  其中 startSymbol 为产生式集的起始符。
 
 ###### splitExpressions(expressions)
 
   根据产生式生成 rules 数组。
 
+###### toExpressions(rules, isExpand = false)
+
+  把 rules 数组转换成产生式字符串数组，isExpand 参数为是否展开表达式，即把或拆分出来。
+
 ###### combineLikeTerms(rules)
 
   配合 splitExpressions 使用，提取公共因子。
+
+###### clearLeftRecursion(rules) （未完成，目前只能消除直接左递归）
+
+  配合 splitExpressions 使用，消除左递归。
 
 ###### makeFirstSet(rules, terminalSymbols)
 

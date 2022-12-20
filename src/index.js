@@ -1,10 +1,11 @@
 "use strict";
 
-const { splitExpressions, combineLikeTerms } = require('./splitExpressions')
+const { splitExpressions, toExpressions, combineLikeTerms, clearLeftRecursion } = require('./splitExpressions')
 const { makeFirstSet, makeUnionFirstSet } = require('./makeFirstSet')
 const { makeFollowSet } = require('./makeFollowSet')
 const { makeSelectSet, isNotIntersect } = require('./makeSelectSet')
 const { makePredictSet } = require('./makePredictSet')
+const { SyntacticAnalyzer } = require('./SyntacticAnalyzer')
 const { EMPTY_CHAIN, $ } = require('./contants')
 
 function makeLL1(expressions, terminalSymbols) {
@@ -16,6 +17,7 @@ function makeLL1(expressions, terminalSymbols) {
   const predictSet = makePredictSet(selectSet)
 
   return {
+    startSymbol: rules[0].left,
     firstSet,
     followSet,
     selectSet,
@@ -85,7 +87,9 @@ function makeLL1(expressions, terminalSymbols) {
 module.exports = {
   makeLL1,
   splitExpressions,
+  toExpressions,
   combineLikeTerms,
+  clearLeftRecursion,
   makeFirstSet,
   makeUnionFirstSet,
   makeFollowSet,

@@ -1,6 +1,6 @@
 const { makeFirstSet, makeUnionFirstSet } = require('../src/makeFirstSet')
 const { splitExpressions } = require('../src/splitExpressions')
-const { EMPTY_CHAIN } = require('../src/contants')
+const { EMPTY_CHAIN } = require('../src/constants')
 
 describe('test makeFirstSet.js', () => {
   test('single expression', () => {
@@ -86,11 +86,11 @@ describe('test makeFirstSet.js', () => {
     })
 
     const rules3 = splitExpressions([
-      'A -> B + C E', // { +, id }
-      'B -> D | null', // { null, id }
-      'C -> + | null', // { +, null }
-      'D -> id', // { id }
-      'E -> *' // { * }
+      'A -> $ B $ + $ C $ E', // { +, id }
+      'B -> D $ | null', // { null, id }
+      'C -> $ + | null', // { +, null }
+      'D -> id $', // { id }
+      'E -> * $ $ $' // { * }
     ])
 
     const firstSet3 = makeFirstSet(rules3, ['+', 'id', '*'])
@@ -106,7 +106,7 @@ describe('test makeFirstSet.js', () => {
   test('unionFirstSet', () => {
     const terminalSymbols = ['(', 'id', '+']
 
-    const chainSet1 = ['T', 'E1']
+    const chainSet1 = ['$', 'T', 'E1', '$', '$']
     const firstSet1 = {
       'T': ['(', 'id'],
       'E1': ['+', EMPTY_CHAIN]

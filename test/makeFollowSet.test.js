@@ -1,6 +1,6 @@
 const { makeFollowSet } = require('../src/makeFollowSet')
 const { splitExpressions } = require('../src/splitExpressions')
-const { $ } = require('../src/contants')
+const { $ } = require('../src/constants')
 
 describe('test makeFollowSet.js', () => {
   test('single expression', () => {
@@ -31,10 +31,10 @@ describe('test makeFollowSet.js', () => {
     })
 
     const rules2 = splitExpressions([
-      'A -> B C',
-      'B -> D | null',
-      'C -> +',
-      'D -> id'
+      'A -> $ B $ C',
+      'B -> D $ $ | null',
+      'C -> $ $ +',
+      'D -> $ id'
     ])
 
     const followSet2 = makeFollowSet(rules2, ['+', 'id'])
@@ -46,13 +46,13 @@ describe('test makeFollowSet.js', () => {
     })
 
     const rules3 = splitExpressions([
-      'E -> T E1',
-      'E1 -> + E | null',
-      'T -> F T1',
-      'T1 -> T | null',
-      'F -> P F1',
-      'F1 -> * F1 | null',
-      'P -> ( E ) | a | b | ^'
+      'E -> $ $ $ T $ $ E1 $ $',
+      'E1 -> $ $$ $$$ + $ $$ $$$  E | null',
+      'T -> $ $$ $$$ F $ $$ $$$  T1',
+      'T1 -> $ $$ $$$ T | null',
+      'F -> $ $$ $$$ P $ $$ $$$  F1',
+      'F1 -> $ $$ $$$ * $ $$ $$$  F1 | null',
+      'P -> $ $$ $$$ ( $ $$ $$$ E $ $$ $$$ ) $ $$ $$$ | $ $$ $$$ a $ $$ $$$ | $ $$ $$$ b $ $$ $$$ | $ $$ $$$ ^ $ $$ $$$'
     ])
 
     const followSet3 = makeFollowSet(rules3, ['+', '*', '(', ')', 'a', 'b', '^'])

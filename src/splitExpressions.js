@@ -1,4 +1,4 @@
-const { EMPTY_CHAIN, OR } = require('./contants');
+const { EMPTY_CHAIN, OR } = require('./constants');
 
 /**
  * 生成式必须以空格作为分隔符，以 | 作为或，以 null 作为空串
@@ -226,13 +226,13 @@ function combineLikeTerms(rules) {
  * 
  */
 function clearLeftRecursion(rules) {
-  const newRules = []
+  const newRules = [];
 
   rules.forEach(rule => {
     newRules.push(
       ...clearDirectLeftRecursion(rule)
-    )
-  })
+    );
+  });
 
   function clearDirectLeftRecursion(
     { left, right } /** rule */
@@ -274,7 +274,7 @@ function clearLeftRecursion(rules) {
     return rules;
   }
 
-  return newRules
+  return newRules;
 }
 
 module.exports = { splitExpressions, toExpressions, combineLikeTerms, clearLeftRecursion };

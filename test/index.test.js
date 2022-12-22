@@ -1,14 +1,14 @@
 const { makeLL1 } = require('../src')
-const { EMPTY_CHAIN, $ } = require('../src/contants')
+const { EMPTY_CHAIN, $ } = require('../src/constants')
 
 describe('test index.js', () => {
   test('makeLL1', () => {
     const expressions = [
-      'E -> T E1',
-      'E1 -> + T E1 | null',
-      'T -> F T1',
-      'T1 -> * F T1 | null',
-      'F -> ( E ) | id'
+      'E -> T $ E1',
+      'E1 -> + $ T E1 | null',
+      'T -> $ F T1',
+      'T1 -> * F $ T1 | null',
+      'F -> ( E $ ) | id'
     ]
     const terminalSymbols = ['+', '*', '(', 'id', ')']
 
@@ -33,11 +33,11 @@ describe('test index.js', () => {
     expect(ll1.selectSet).toEqual(
       new Map([
         [
-          { left: 'E', right: ['T', 'E1'] },
+          { left: 'E', right: ['T', $, 'E1'] },
           ['(', 'id']
         ],
         [
-          { left: 'E1', right: ['+', 'T', 'E1'] },
+          { left: 'E1', right: ['+', $, 'T', 'E1'] },
           ['+']
         ],
         [
@@ -45,11 +45,11 @@ describe('test index.js', () => {
           [$, ')']
         ],
         [
-          { left: 'T', right: ['F', 'T1'] },
+          { left: 'T', right: [$, 'F', 'T1'] },
           ['(', 'id']
         ],
         [
-          { left: 'T1', right: ['*', 'F', 'T1'] },
+          { left: 'T1', right: ['*', 'F', $, 'T1'] },
           ['*']
         ],
         [
@@ -57,7 +57,7 @@ describe('test index.js', () => {
           ['+', $, ')']]
         ,
         [
-          { left: 'F', right: ['(', 'E', ')'] },
+          { left: 'F', right: ['(', 'E', $, ')'] },
           ['(']
         ],
         [
@@ -72,23 +72,23 @@ describe('test index.js', () => {
         [
           '(',
           new Map([
-            ['E', ['T', 'E1']],
-            ['T', ['F', 'T1']],
-            ['F', ['(', 'E', ')']]
+            ['E', ['T', $, 'E1']],
+            ['T', [$, 'F', 'T1']],
+            ['F', ['(', 'E', $, ')']]
           ])
         ],
         [
           'id',
           new Map([
-            ['E', ['T', 'E1']],
-            ['T', ['F', 'T1']],
+            ['E', ['T', $, 'E1']],
+            ['T', [$, 'F', 'T1']],
             ['F', ['id']]
           ])
         ],
         [
           '+',
           new Map([
-            ['E1', ['+', 'T', 'E1']],
+            ['E1', ['+', $, 'T', 'E1']],
             ['T1', [EMPTY_CHAIN]]
           ])
         ],
@@ -109,7 +109,7 @@ describe('test index.js', () => {
         [
           '*',
           new Map([
-            ['T1', [ '*', 'F', 'T1' ]]
+            ['T1', [ '*', 'F', $, 'T1']]
           ])
         ]
       ])
@@ -118,8 +118,8 @@ describe('test index.js', () => {
 
   test('print', () => {
     const expressions = [
-      'E -> T E1', 
-      'E1 -> A T E1',
+      'E -> T $T E1', 
+      'E1 -> A $A T E1',
       'E1 -> null',
       'T -> F T1',
       'T1 -> M F T1',

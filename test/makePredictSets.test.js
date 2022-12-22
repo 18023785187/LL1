@@ -1,12 +1,12 @@
 const { makeSelectSet } = require('../src/makeSelectSet')
 const { makePredictSet } = require('../src/makePredictSet')
 const { splitExpressions } = require('../src/splitExpressions')
-const { $, EMPTY_CHAIN } = require('../src/contants')
+const { $, EMPTY_CHAIN } = require('../src/constants')
 
 describe('test makePredictSets.js', () => {
   test('expression', () => {
     const rules1 = splitExpressions([
-      'E -> T E1',
+      'E -> $$$$ T E1',
       'E1 -> + T E1 | null',
       'T -> F T1',
       'T1 -> * F T1 | null',
@@ -19,7 +19,7 @@ describe('test makePredictSets.js', () => {
         [
           '(',
           new Map([
-            ['E', ['T', 'E1']],
+            ['E', ['$$$$', 'T', 'E1']],
             ['T', ['F', 'T1']],
             ['F', ['(', 'E', ')']]
           ])
@@ -27,7 +27,7 @@ describe('test makePredictSets.js', () => {
         [
           'id',
           new Map([
-            ['E', ['T', 'E1']],
+            ['E', ['$$$$', 'T', 'E1']],
             ['T', ['F', 'T1']],
             ['F', ['id']]
           ])

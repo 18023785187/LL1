@@ -1,7 +1,7 @@
-const { makeFirstSet, makeUnionFirstSet } = require('./makeFirstSet')
-const { makeFollowSet } = require('./makeFollowSet')
-const { mergeSet } = require('./utils')
-const { EMPTY_CHAIN } = require('./contants')
+const { makeFirstSet, makeUnionFirstSet } = require('./makeFirstSet');
+const { makeFollowSet } = require('./makeFollowSet');
+const { mergeSet } = require('./utils');
+const { EMPTY_CHAIN } = require('./constants');
 
 /**
   对于形似 A -> ab 的产生式，其 SELECT 集为 FIRST(ab)。
@@ -19,41 +19,41 @@ function makeSelectSet(
   firstSet = makeFirstSet(rules, terminalSymbols),
   followSet = makeFollowSet(rules, terminalSymbols)
 ) {
-  const selectSet = new Map()
+  const selectSet = new Map();
 
   rules.forEach(({ left, right }) => {
     right.forEach(chainSet => {
-      const chain = chainSet[0]
-      const newRule = { left, right: chainSet }
+      const chain = chainSet[0];
+      const newRule = { left, right: chainSet };
 
       if (chain === EMPTY_CHAIN) {
-        selectSet.set(newRule, followSet[left])
+        selectSet.set(newRule, followSet[left]);
       } else {
-        selectSet.set(newRule, makeUnionFirstSet(chainSet, firstSet, terminalSymbols))
+        selectSet.set(newRule, makeUnionFirstSet(chainSet, firstSet, terminalSymbols));
       }
-    })
-  })
+    });
+  });
 
-  return selectSet
+  return selectSet;
 }
 
 function isNotIntersect(selectSet) {
-  const map = new Map()
+  const map = new Map();
 
   for (const [{ left }, sets] of selectSet) {
     if (map.has(left)) {
-      const prevSets = map.get(left)
-      const newSets = mergeSet(prevSets, sets)
+      const prevSets = map.get(left);
+      const newSets = mergeSet(prevSets, sets);
       if (newSets.size !== prevSets.size + sets.length) {
-        return false
+        return false;
       }
-      map.set(left, newSets)
+      map.set(left, newSets);
     } else {
-      map.set(left, new Set(sets))
+      map.set(left, new Set(sets));
     }
   }
 
-  return true
+  return true;
 }
 
-module.exports = { makeSelectSet, isNotIntersect }
+module.exports = { makeSelectSet, isNotIntersect };

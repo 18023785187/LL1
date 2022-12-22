@@ -1,5 +1,5 @@
 const { splitExpressions, toExpressions, combineLikeTerms, clearLeftRecursion } = require('../src/splitExpressions');
-const { EMPTY_CHAIN } = require('../src/contants');
+const { EMPTY_CHAIN } = require('../src/constants');
 
 describe('test splitExpressions.js', () => {
   test('single expression', () => {

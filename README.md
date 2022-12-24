@@ -2,8 +2,10 @@
 
 根据产生式求取 First、Follow、Select 集和预测分析表，附带一系列应用例子。
 
+`./examples` 目录下进入任意文件执行 `node index.js` 即可查看示例，读者也可自行编写文法规则，只要符合 LL(1) 文法的规则都可以通过构造器自动生成语法解析器（生成器目录 `./examples/SyntacticParser.js`）。
+
 ```javascript
-const expressions = [ // 书写产生式是规定空格为分隔符，null 为空串
+const grammars = [ // 书写产生式是规定空格为分隔符，null 为空串
   'E -> T E1',
   'E1 -> + T E1 | null',
   'T -> F T1',
@@ -15,7 +17,7 @@ const terminalSymbols = ['+', '*', '(', 'id', ')'] // 指定终止符
 /**
   返回 firstSet, followSet, selectSet, predictSet 和 print 方法
  */
-const ll1 = makeLL1(expressions, terminalSymbols)
+const ll1 = makeLL1(grammars, terminalSymbols)
 ll1.print()
 
 // print
@@ -38,9 +40,9 @@ ll1.print()
 
 #### 类型
 
-重要的输入为产生式 `expressions` 和终结符 `terminalSymbols`，产生式和终结符由一维字符串数组组成。
+重要的输入为产生式 `grammars` 和终结符 `terminalSymbols`，产生式和终结符由一维字符串数组组成。
 
-`expressions` 规定以空格为分割单元，| 带有或的含义，以 \$ 为前缀命名的串为该处执行函数，用于对生成的 AST 进行整合，对于终结符则不需要 \$。
+`grammars` 规定以空格为分割单元，| 带有或的含义，以 \$ 为前缀命名的串为该处执行函数，用于对生成的 AST 进行整合，对于终结符则不需要 \$。
 
 `terminalSymbols` 指定终结符集合，规定终结符不能是 `null、|、$`，其中 null 表示空串。
 
@@ -51,10 +53,10 @@ ll1.print()
   E -> id E1
   E1 -> +id E1 | null
 
-expressions 对应的书写格式为：
+grammars 对应的书写格式为：
 
 ```javascript
-const expressions = [
+const grammars = [
   'E -> id E1',
   'E1 -> + id E1 | null'
 ]
@@ -63,7 +65,7 @@ const expressions = [
 或
 
 ```javascript
-const expressions = [
+const grammars = [
   'E -> id E1',
   'E1 -> + id E1',
   'E1 -> null'
@@ -73,14 +75,14 @@ const expressions = [
 对于生成 AST 的过程我们可以在产生式中插入辅助函数标识，以 $ 开头
 
 ```javascript
-const expressions = [
+const grammars = [
   'E -> id E1',
   'E1 -> + id $mergeExp E1',
   'E1 -> null'
 ]
 ```
 
-对于终结符则不需在产生式中插入辅助函数标识，具体用法可以查看 `./example` 目录下的任意例子，在目录下运行 `npm index.js` 即可。
+对于终结符则不需在产生式中插入辅助函数标识，具体用法可以查看 `./examples` 目录下的任意例子，在目录下运行 `npm index.js` 即可。
 
 #### 类型表
 
@@ -88,7 +90,7 @@ const expressions = [
 type EMPTY_CHAIN = null
 type $ = '$'
 
-type expressions = string[]
+type grammars = string[]
 
 type terminalSymbols = string[]
 
@@ -117,26 +119,26 @@ type predictSet = Map<string, Map<left, right>>
 
 ## API
 
-###### makeLL1(expressions, terminalSymbols)
+###### makeLL1(grammars, terminalSymbols)
 
   根据产生式和指定终止符返回 startSymbol, firstSet, followSet, selectSet, predictSet 和 print 方法。
   其中 startSymbol 为产生式集的起始符。
 
-###### splitExpressions(expressions)
+###### splitGrammars(grammars)
 
   根据产生式生成 rules 数组。
 
-###### toExpressions(rules, isExpand = false)
+###### toGrammars(rules, isExpand = false)
 
   把 rules 数组转换成产生式字符串数组，isExpand 参数为是否展开表达式，即把或拆分出来。
 
 ###### combineLikeTerms(rules)
 
-  配合 splitExpressions 使用，提取公共因子（注意：不能在产生式中插入辅助函数标识）。
+  配合 splitGrammars 使用，提取公共因子（注意：不能在产生式中插入辅助函数标识）。
 
 ###### clearLeftRecursion(rules) （未完成，目前只能消除直接左递归）
 
-  配合 splitExpressions 使用，消除左递归（注意：不能在产生式中插入辅助函数标识）。
+  配合 splitGrammars 使用，消除左递归（注意：不能在产生式中插入辅助函数标识）。
 
 ###### makeFirstSet(rules, terminalSymbols)
 

@@ -1,11 +1,11 @@
 const { makeSelectSet } = require('../src/makeSelectSet')
 const { makePredictSet } = require('../src/makePredictSet')
-const { splitExpressions } = require('../src/splitExpressions')
+const { splitGrammars } = require('../src/splitGrammars')
 const { $, EMPTY_CHAIN } = require('../src/constants')
 
 describe('test makePredictSets.js', () => {
-  test('expression', () => {
-    const rules1 = splitExpressions([
+  test('grammar', () => {
+    const rules1 = splitGrammars([
       'E -> $$$$ T E1',
       'E1 -> + T E1 | null',
       'T -> F T1',
@@ -64,7 +64,7 @@ describe('test makePredictSets.js', () => {
   })
 
   test('error', () => {
-    const rules1 = splitExpressions([
+    const rules1 = splitGrammars([
       'A -> B C | +',
       'B -> +',
       'C -> id'

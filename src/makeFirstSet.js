@@ -20,12 +20,12 @@ function makeFirstSet(rules, terminalSymbols) {
       const prevLength = sets.size;
 
       // 处理诸如 E -> A | B 的情况需要遍历
-      right.forEach(exp => {
+      right.forEach(grammar => {
         let first = 0;
-        let chain = exp[first];
+        let chain = grammar[first];
 
         while (chain?.[0] === $) {
-          chain = exp[++first];
+          chain = grammar[++first];
         }
 
         if (isTerminal(chain)) sets.add(chain);
@@ -36,16 +36,16 @@ function makeFirstSet(rules, terminalSymbols) {
             nextSet.delete(EMPTY_CHAIN);
             sets = mergeSet(sets, nextSet);
             first += 1;
-            chain = exp[first];
+            chain = grammar[first];
 
             while (chain?.[0] === $) {
-              chain = exp[++first];
+              chain = grammar[++first];
             }
 
           } while (firstSet[chain]?.includes(EMPTY_CHAIN));
 
           if (isTerminal(chain)) sets.add(chain);
-          else sets = mergeSet(sets, firstSet[chain]);
+          else if(chain) sets = mergeSet(sets, firstSet[chain]);
         }
         else sets = mergeSet(sets, firstSet[chain]);
       });

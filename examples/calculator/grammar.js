@@ -14,7 +14,7 @@ const AstChildrenProperty = {
   'BinaryExpression': ['left', 'right']
 }
 
-const expressions =
+const grammars =
   [
     'Sentence       -> AddExpression',
     'AddExpression  -> MulExpression AddExpression1',
@@ -27,7 +27,7 @@ const expressions =
   ];
 const terminalSymbols = 'leftBracket|rightBracket|literal|plus|minus|multiply|divide'.split('|');
 
-const ll1 = makeLL1(expressions, terminalSymbols);
+const ll1 = makeLL1(grammars, terminalSymbols);
 
 const literal = (raw, line, start, end) => {
   return {

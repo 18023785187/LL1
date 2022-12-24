@@ -2,7 +2,7 @@ const { isNotIntersect } = require('./makeSelectSet');
 
 function makePredictSet(selectSet) {
   if (!isNotIntersect(selectSet))
-    throw new Error('The select set does not satisfy the LL(1) grammar');
+    throw new Error('Select set does not satisfy the LL(1) grammar');
 
   const predictSet = new Map();
 

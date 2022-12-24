@@ -1,10 +1,10 @@
 const { makeFirstSet, makeUnionFirstSet } = require('../src/makeFirstSet')
-const { splitExpressions } = require('../src/splitExpressions')
+const { splitGrammars } = require('../src/splitGrammars')
 const { EMPTY_CHAIN } = require('../src/constants')
 
 describe('test makeFirstSet.js', () => {
-  test('single expression', () => {
-    const rules = splitExpressions(['E -> ( id ) | null'])
+  test('single grammar', () => {
+    const rules = splitGrammars(['E -> ( id ) | null'])
 
     const firstSet = makeFirstSet(rules, ['(', 'id', ')'])
     expect(firstSet).toEqual({
@@ -12,8 +12,8 @@ describe('test makeFirstSet.js', () => {
     })
   })
 
-  test('expressions', () => {
-    const rules1 = splitExpressions([
+  test('grammars', () => {
+    const rules1 = splitGrammars([
       'E -> T E1',
       'E1 -> + T E1 | null',
       'T -> F T1',
@@ -30,7 +30,7 @@ describe('test makeFirstSet.js', () => {
       'F': ['(', 'id']
     })
 
-    const rules2 = splitExpressions([
+    const rules2 = splitGrammars([
       'E -> T E1',
       'E1 -> + E | null',
       'T -> F T1',
@@ -53,7 +53,7 @@ describe('test makeFirstSet.js', () => {
   })
 
   test('first nonterminal include empty chain', () => {
-    const rules1 = splitExpressions([
+    const rules1 = splitGrammars([
       'A -> B C', // { +, id }
       'B -> D | null', // { null, id }
       'C -> +', // { + }
@@ -68,7 +68,7 @@ describe('test makeFirstSet.js', () => {
       'D': ['id'],
     })
 
-    const rules2 = splitExpressions([
+    const rules2 = splitGrammars([
       'A -> B C E', // { +, *, id }
       'B -> D | null', // { null, id }
       'C -> + | null', // { +, null }
@@ -85,7 +85,7 @@ describe('test makeFirstSet.js', () => {
       'E': ['*']
     })
 
-    const rules3 = splitExpressions([
+    const rules3 = splitGrammars([
       'A -> $ B $ + $ C $ E', // { +, id }
       'B -> D $ | null', // { null, id }
       'C -> $ + | null', // { +, null }

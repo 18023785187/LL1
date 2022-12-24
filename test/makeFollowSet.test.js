@@ -1,10 +1,10 @@
 const { makeFollowSet } = require('../src/makeFollowSet')
-const { splitExpressions } = require('../src/splitExpressions')
+const { splitGrammars } = require('../src/splitGrammars')
 const { $ } = require('../src/constants')
 
 describe('test makeFollowSet.js', () => {
-  test('single expression', () => {
-    const rules = splitExpressions(['E -> ( id ) | null'])
+  test('single grammar', () => {
+    const rules = splitGrammars(['E -> ( id ) | null'])
 
     const followSet = makeFollowSet(rules, ['(', 'id', ')'])
     expect(followSet).toEqual({
@@ -12,8 +12,8 @@ describe('test makeFollowSet.js', () => {
     })
   })
 
-  test('expressions', () => {
-    const rules1 = splitExpressions([
+  test('grammars', () => {
+    const rules1 = splitGrammars([
       'E -> T E1',
       'E1 -> + T E1 | null',
       'T -> F T1',
@@ -30,7 +30,7 @@ describe('test makeFollowSet.js', () => {
       'F': ['*', '+', $, ')']
     })
 
-    const rules2 = splitExpressions([
+    const rules2 = splitGrammars([
       'A -> $ B $ C',
       'B -> D $ $ | null',
       'C -> $ $ +',
@@ -45,7 +45,7 @@ describe('test makeFollowSet.js', () => {
       'D': ['+'],
     })
 
-    const rules3 = splitExpressions([
+    const rules3 = splitGrammars([
       'E -> $ $ $ T $ $ E1 $ $',
       'E1 -> $ $$ $$$ + $ $$ $$$  E | null',
       'T -> $ $$ $$$ F $ $$ $$$  T1',

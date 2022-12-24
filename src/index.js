@@ -1,14 +1,14 @@
 "use strict";
 
-const { splitExpressions, toExpressions, combineLikeTerms, clearLeftRecursion } = require('./splitExpressions');
+const { splitGrammars, toGrammars, combineLikeTerms, clearLeftRecursion } = require('./splitGrammars');
 const { makeFirstSet, makeUnionFirstSet } = require('./makeFirstSet');
 const { makeFollowSet } = require('./makeFollowSet');
 const { makeSelectSet, isNotIntersect } = require('./makeSelectSet');
 const { makePredictSet } = require('./makePredictSet');
 const { EMPTY_CHAIN, $ } = require('./constants');
 
-function makeLL1(expressions, terminalSymbols) {
-  const rules = splitExpressions(expressions);
+function makeLL1(grammars, terminalSymbols) {
+  const rules = splitGrammars(grammars);
 
   const firstSet = makeFirstSet(rules, terminalSymbols);
   const followSet = makeFollowSet(rules, terminalSymbols, firstSet);
@@ -85,8 +85,8 @@ function makeLL1(expressions, terminalSymbols) {
 
 module.exports = {
   makeLL1,
-  splitExpressions,
-  toExpressions,
+  splitGrammars,
+  toGrammars,
   combineLikeTerms,
   clearLeftRecursion,
   makeFirstSet,

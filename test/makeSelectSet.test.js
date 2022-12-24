@@ -1,10 +1,10 @@
 const { makeSelectSet, isNotIntersect } = require('../src/makeSelectSet')
-const { splitExpressions } = require('../src/splitExpressions')
+const { splitGrammars } = require('../src/splitGrammars')
 const { $, EMPTY_CHAIN } = require('../src/constants')
 
 describe('test makeSelectSet.js', () => {
-  test('expression', () => {
-    const rules1 = splitExpressions([
+  test('grammar', () => {
+    const rules1 = splitGrammars([
       'E -> T E1',
       'E1 -> + T E1 | null',
       'T -> F T1',
@@ -50,7 +50,7 @@ describe('test makeSelectSet.js', () => {
       ])
     )
 
-    const rules2 = splitExpressions([
+    const rules2 = splitGrammars([
       'E -> T E1',
       'E1 -> A T E1 | null',
       'T -> F T1',
@@ -116,7 +116,7 @@ describe('test makeSelectSet.js', () => {
   })
 
   test('isNotIntersect', () => {
-    const rules1 = splitExpressions([
+    const rules1 = splitGrammars([
       'E -> T E1',
       'E1 -> + T E1 | null',
       'T -> F T1',
@@ -127,7 +127,7 @@ describe('test makeSelectSet.js', () => {
     const selectSet1 = makeSelectSet(rules1, ['+', '*', '(', 'id', ')'])
     expect(isNotIntersect(selectSet1)).toBeTruthy()
 
-    const rules2 = splitExpressions([
+    const rules2 = splitGrammars([
       'E -> T E1',
       'E1 -> A T E1 | null',
       'T -> F T1',
@@ -140,7 +140,7 @@ describe('test makeSelectSet.js', () => {
     const selectSet2 = makeSelectSet(rules2, ['+', '-', '*', '/', '(', 'id', ')'])
     expect(isNotIntersect(selectSet2)).toBeTruthy()
 
-    const rules3 = splitExpressions([
+    const rules3 = splitGrammars([
       'A -> B C | +',
       'B -> +',
       'C -> id'

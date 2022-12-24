@@ -34,21 +34,21 @@ function makeFollowSet(
 
     isSetChanged = false;
     rules.forEach(({ left, right }) => {
-      right.forEach(exp => {
-        for (let i = exp.length - 1; i >= 0; --i) {
-          const chain = exp[i];
+      right.forEach(grammar => {
+        for (let i = grammar.length - 1; i >= 0; --i) {
+          const chain = grammar[i];
 
           if (isTerminal(chain) || chain[0] === $) continue;
 
           let prevLength = followSet[chain].length;
-          if (i === exp.length - 1) {
+          if (i === grammar.length - 1) {
             followSet[chain] = [...mergeSet(followSet[chain], followSet[left])];
           } else {
             let j = i + 1;
-            let nextChain = exp[j];
+            let nextChain = grammar[j];
 
-            while(j < exp.length && nextChain[0] === $) {
-              nextChain = exp[++j]
+            while(j < grammar.length && nextChain[0] === $) {
+              nextChain = grammar[++j]
             }
 
             if (isTerminal(nextChain)) {
@@ -58,8 +58,8 @@ function makeFollowSet(
               nextSet.delete(EMPTY_CHAIN);
               followSet[chain] = [...mergeSet(followSet[chain], nextSet)];
 
-              while (j < exp.length && (emptySet.has(nextChain) || nextChain[0] === $)) nextChain = exp[++j];
-              if (j === exp.length) followSet[chain] = [...mergeSet(followSet[chain], followSet[left])];
+              while (j < grammar.length && (emptySet.has(nextChain) || nextChain[0] === $)) nextChain = grammar[++j];
+              if (j === grammar.length) followSet[chain] = [...mergeSet(followSet[chain], followSet[left])];
             }
           }
 

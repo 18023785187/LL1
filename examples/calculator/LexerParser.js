@@ -1,6 +1,18 @@
 const { Scanner } = require('../Scanner');
-const { Token, tokenType } = require('../tokenize');
+const { Token } = require('../Token');
 const Error = require('../Error');
+
+const tokenType = {
+  Initial: 'Initial',
+  literal: 'literal',
+  point: 'point',
+  leftBracket: 'leftBracket',
+  rightBracket: 'rightBracket',
+  plus: 'plus',
+  minus: 'minus',
+  multiply: 'multiply',
+  divide: 'divide'
+};
 
 class LexerParser {
 
@@ -16,13 +28,13 @@ class LexerParser {
     return char === '\r' || char === '\n';
   }
 
-  parse(sentence) {
+  tokenize(sentence) {
     const tokens = [];
 
     let char;
     let fragment = '';
     let state = tokenType.Initial;
-    let line = 1;
+    let line = 0;
     let start = 0;
     let changStart = 0;
     const scanner = new Scanner(sentence + ' ');

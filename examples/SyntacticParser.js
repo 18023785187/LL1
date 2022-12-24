@@ -1,6 +1,6 @@
 const { EMPTY_CHAIN, $ } = require('../src/index')
 const { Scanner } = require("./Scanner")
-const { Token } = require('./tokenize')
+const { Token } = require('./Token')
 const Error = require('./Error');
 
 class SyntacticParser {
@@ -35,7 +35,7 @@ class SyntacticParser {
       const expressionMap = this.predictSet.get(terminalSymbol)
       const left = stack.pop()
       if(left[0] === $) {
-        this.constructor[left](astList)
+        this.constructor[left]?.(astList)
         continue
       } else if(left === token.type) {
         const child = this.constructor[token.type]?.(token.value, token.line, token.start, token.end)
@@ -59,7 +59,13 @@ class SyntacticParser {
         stack.push(right[i])
     }
 
-    return astList[0]
+    return {
+      type: 'Program',
+      line: 1,
+      start: 0,
+      end: astList.length ? astList[astList.length - 1].end : 0,
+      body: astList
+    }
   }
 }
 

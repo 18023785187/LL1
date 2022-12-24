@@ -3,7 +3,7 @@ const { EMPTY_CHAIN, $ } = require('../src/constants')
 
 describe('test index.js', () => {
   test('makeLL1', () => {
-    const expressions = [
+    const grammars = [
       'E -> T $ E1',
       'E1 -> + $ T E1 | null',
       'T -> $ F T1',
@@ -12,7 +12,7 @@ describe('test index.js', () => {
     ]
     const terminalSymbols = ['+', '*', '(', 'id', ')']
 
-    const ll1 = makeLL1(expressions, terminalSymbols)
+    const ll1 = makeLL1(grammars, terminalSymbols)
 
     expect(ll1.firstSet).toEqual({
       'E': ['(', 'id'],
@@ -117,7 +117,7 @@ describe('test index.js', () => {
   })
 
   test('print', () => {
-    const expressions = [
+    const grammars = [
       'E -> T $T E1', 
       'E1 -> A $A T E1',
       'E1 -> null',
@@ -133,7 +133,7 @@ describe('test index.js', () => {
     ]
     const terminalSymbols = ['+', '-', '*', '/', '(', 'id', ')']
 
-    const ll1 = makeLL1(expressions, terminalSymbols)
+    const ll1 = makeLL1(grammars, terminalSymbols)
     ll1.print()
   })
 })

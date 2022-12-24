@@ -1,4 +1,6 @@
 const { EMPTY_CHAIN, OR } = require('./constants');
+const { isBlank } = require('./utils')
+
 
 /**
  * 生成式必须以空格作为分隔符，以 | 作为或，以 null 作为空串
@@ -8,14 +10,14 @@ const { EMPTY_CHAIN, OR } = require('./constants');
  * 
  * 无论使用哪种写法最后返回的都会合并成一项，即合并成第一种写法的格式
  */
-function splitExpressions(expressions) {
+function splitGrammars(grammars) {
   const rules = [];
   const ruleMap = new Map(); // 用于缓存已经创建的产生式，避免重复创建相关的产生式
 
-  for (let i = 0; i < expressions.length; ++i) {
-    const expression = expressions[i];
-    let [left, right] = expression.split('->');
-    if (!right || !right.trim()) throw new Error('The expression is missing the right side');
+  for (let i = 0; i < grammars.length; ++i) {
+    const grammar = grammars[i];
+    let [left, right] = grammar.split('->');
+    if (!right || !right.trim()) throw new Error('Grammar is missing the right side');
 
     let isDefined = true;
     if (!ruleMap.has(left)) {
@@ -25,8 +27,8 @@ function splitExpressions(expressions) {
         right: []
       });
     }
-    const explanation = ruleMap.get(left);
-    explanation.left = left.trim();
+    const grammarRule = ruleMap.get(left);
+    grammarRule.left = left.trim();
 
     let fragment = [];
     let str = '';
@@ -34,7 +36,7 @@ function splitExpressions(expressions) {
     for (let j = 0; j < right.length; ++j) {
       const char = right[j];
 
-      if (char === ' ') {
+      if (isBlank(char)) {
         if (str === 'null') {
           fragment.push(EMPTY_CHAIN);
         } else if (str) {
@@ -42,7 +44,7 @@ function splitExpressions(expressions) {
         }
         str = '';
       } else if (char === '|') {
-        explanation.right.push(fragment);
+        grammarRule.right.push(fragment);
         fragment = [];
         str = '';
       } else {
@@ -50,41 +52,41 @@ function splitExpressions(expressions) {
       }
     }
 
-    if (fragment.length) explanation.right.push(fragment);
-    !isDefined && rules.push(explanation);
+    if (fragment.length) grammarRule.right.push(fragment);
+    !isDefined && rules.push(grammarRule);
   }
 
   return rules;
 }
 
-function toExpressions(rules, isExpand = false) {
-  const expressions = [];
+function toGrammars(rules, isExpand = false) {
+  const grammars = [];
 
   rules.forEach(({ left, right }) => {
     if (isExpand) {
-      right.forEach(exp => {
-        let expression = '';
+      right.forEach(r => {
+        let grammar = '';
 
-        expression += `${left} -> ${exp.map(chain => chain + '').join(' ')}`;
-        expressions.push(expression);
+        grammar += `${left} -> ${r.map(chain => chain + '').join(' ')}`;
+        grammars.push(grammar);
       });
     } else {
-      let expression = '';
+      let grammar = '';
 
-      expression += `${left} -> `;
-      right.forEach(exp => {
-        expression += exp.map(chain => chain + '').join(' ') + ` ${OR} `;
+      grammar += `${left} -> `;
+      right.forEach(r => {
+        grammar += r.map(chain => chain + '').join(' ') + ` ${OR} `;
       });
 
-      expressions.push(expression.slice(0, -3));
+      grammars.push(grammar.slice(0, -3));
     }
   });
 
-  return expressions;
+  return grammars;
 }
 
 /**
- * 基于 splitExpressions 方法返回的 rules 进行提取公共因子
+ * 基于 splitGrammars 方法返回的 rules 进行提取公共因子
  * 
  * 提取公共因子产生的新表达式用原表达式加 ' 表示，如有多个公共因子以此类推，如：
  * 
@@ -97,7 +99,7 @@ function toExpressions(rules, isExpand = false) {
  *  E'' -> c | d
  */
 function combineLikeTerms(rules) {
-  const mergeRight = (right) => [...right.map(exp => [...exp])];
+  const mergeRight = (right) => [...right.map(grammar => [...grammar])];
   const rightToString = (right) => right.join(OR);
   const newRules = [];
 
@@ -115,14 +117,14 @@ function combineLikeTerms(rules) {
 
     let repeat = 0;
     let isInsertRoot = false; // 标记新产生式是否已推入 newRules
-    const explanation = {
+    const grammarRule = {
       left,
       right: []
     };
 
     if (right.length === 1) {
-      explanation.right = mergeRight(right);
-      newRules.push(explanation);
+      grammarRule.right = mergeRight(right);
+      newRules.push(grammarRule);
       return;
     }
 
@@ -134,39 +136,39 @@ function combineLikeTerms(rules) {
       skips.push(i);
 
       if (i === right.length - 1) {
-        explanation.right.push(right[i]);
+        grammarRule.right.push(right[i]);
         return;
       }
 
-      const exp = right[i];
+      const grammar = right[i];
       let pos = 0;
 
-      const commonExps = [];
-      commonExps.push(exp);
+      const commonGrammars = [];
+      commonGrammars.push(grammar);
 
       prefix = '';
       setPrefix:
-      while (pos < exp.length) { // 当前产生式右边到尽头时，结束遍历
-        chain = exp[pos];
+      while (pos < grammar.length) { // 当前产生式右边到尽头时，结束遍历
+        chain = grammar[pos];
 
         let isEqualChain = false;
         if (pos === 0) {
           for (let j = i + 1; j < right.length; ++j) {
-            const curExp = right[j];
-            const curChain = curExp[pos];
+            const curGrammar = right[j];
+            const curChain = curGrammar[pos];
             if (!curChain) continue;
 
             if (curChain === chain) {
               isEqualChain = true;
               skips.push(j);
 
-              commonExps.push(right[j]);
+              commonGrammars.push(right[j]);
             }
           }
         } else {
           for (let j = i + 1; j < right.length; ++j) {
-            const curExp = right[j];
-            const curChain = curExp[pos];
+            const curGrammar = right[j];
+            const curChain = curGrammar[pos];
             if (!curChain || curChain !== chain || !skips.includes(j)) continue;
             isEqualChain = true;
           }
@@ -178,7 +180,7 @@ function combineLikeTerms(rules) {
       }
 
       if (prefix) {
-        const suffixes = commonExps.map(exp => {
+        const suffixes = commonGrammars.map(exp => {
           const suffix = exp.slice(prefix.slice(0, -1).split(OR).length);
           if (!suffix.length) return [EMPTY_CHAIN];
           return suffix;
@@ -191,18 +193,18 @@ function combineLikeTerms(rules) {
           newLeft = `${left}${"'".repeat(repeat)}'`;
         }
         const newRight = [...prefix.slice(0, -1).split(OR), newLeft];
-        explanation.right.push(newRight);
+        grammarRule.right.push(newRight);
         if (!isInsertRoot) {
-          newRules.push(explanation);
+          newRules.push(grammarRule);
           repeat++;
         };
 
         if (!commonSuffix.has(rightToString(suffixes)))
           handleRule(newLeft, suffixes);
       } else {
-        explanation.right.push([...right[i]]);
+        grammarRule.right.push([...right[i]]);
         if (!isInsertRoot) {
-          newRules.push(explanation);
+          newRules.push(grammarRule);
         };
       }
       isInsertRoot = true;
@@ -212,7 +214,7 @@ function combineLikeTerms(rules) {
 }
 
 /**
- * 基于 splitExpressions 方法返回的 rules 进行消除左递归
+ * 基于 splitGrammars 方法返回的 rules 进行消除左递归
  * 
  * 左递归分为直接左递归和间接左递归，直接左递归调用 clearDirectLeftRecursion 函数进行消除，间接左递归通过代入产生式降级为直接左递归进行消除，
  * 为了与提取公共因子进行区分，消除左递归引入的新产生式用 ` 标记，如：E -> E + T 消除后得 E -> T E`  E` -> + T E` | null
@@ -240,34 +242,34 @@ function clearLeftRecursion(rules) {
     const rules = [];
     const newLeft = `${left}\``;
 
-    const prefixExps = [];
-    const exps = [];
+    const prefixGrammars = [];
+    const grammars = [];
     let isEmpty = false;
-    right.forEach(exp => {
-      if (exp[0] === left) {
-        exp.shift();
-        exp.push(newLeft);
-        prefixExps.push(exp);
-      } else if (exp[0] === EMPTY_CHAIN) {
+    right.forEach(grammar => {
+      if (grammar[0] === left) {
+        grammar.shift();
+        grammar.push(newLeft);
+        prefixGrammars.push(grammar);
+      } else if (grammar[0] === EMPTY_CHAIN) {
         isEmpty = true;
       } else {
-        exp.push(newLeft);
-        exps.push(exp);
+        grammar.push(newLeft);
+        grammars.push(grammar);
       }
     });
 
     if (isEmpty) {
-      exps.push([newLeft]);
+      grammars.push([newLeft]);
     }
 
     rules.push(
       {
         left,
-        right: [...exps]
+        right: [...grammars]
       },
       {
         left: newLeft,
-        right: [...prefixExps, [EMPTY_CHAIN]]
+        right: [...prefixGrammars, [EMPTY_CHAIN]]
       }
     );
 
@@ -277,4 +279,4 @@ function clearLeftRecursion(rules) {
   return newRules;
 }
 
-module.exports = { splitExpressions, toExpressions, combineLikeTerms, clearLeftRecursion };
+module.exports = { splitGrammars, toGrammars, combineLikeTerms, clearLeftRecursion };

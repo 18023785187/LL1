@@ -15,10 +15,13 @@ const tokenType = {
   divide: 'divide',
   semicolon: 'semicolon',
   equal: 'equal',
+  colon: 'colon',
+  comma: 'comma',
   def1: 'def1',
   def2: 'def2',
   def3: 'def3',
-  read1: 'read1',
+  readOrReturn1: 'readOrReturn1',
+  readOrReturn2: 'readOrReturn2',
   read2: 'read2',
   read3: 'read3',
   read4: 'read4',
@@ -34,17 +37,18 @@ const tokenType = {
   end1: 'end1',
   end2: 'end2',
   end3: 'end3',
-  print1: 'print1',
-  print2: 'print2',
-  print3: 'print3',
-  print4: 'print4',
-  print5: 'print5',
-  print: 'print',
+  return2: 'return2',
+  return3: 'return3',
+  return4: 'return4',
+  return5: 'return5',
+  return6: 'return6',
   defined: 'defined',
   function: 'function',
   begin: 'begin',
   end: 'end',
-  comment: 'comment'
+  return: 'return',
+  comment: 'comment',
+  quotation: 'quotation',
 };
 
 class LexerParser {
@@ -90,11 +94,17 @@ class LexerParser {
             state = tokenType.def1;
             break;
           case 'r':
-            state = tokenType.read1;
+            state = tokenType.readOrReturn1;
             break;
-          case 'p':
-            state = tokenType.print1;
+          case 'f':
+            state = tokenType.func1;
             break;
+          case 'b':
+            state = tokenType.begin1
+            break
+          case 'e':
+            state = tokenType.end1
+            break
           default:
             state = tokenType.identifier;
             break;
@@ -137,6 +147,15 @@ class LexerParser {
           case '#':
             state = tokenType.comment;
             break;
+          case ':':
+            state = tokenType.colon;
+            break
+          case ',':
+            state = tokenType.comma
+            break
+          case '"':
+            state = tokenType.quotation
+            break
           default:
             const message = sentence.slice(0, changStart) + "\x1b[31;2;4m" + sentence.slice(changStart, scanner.pos + 1) + "\x1b[0m" + sentence.slice(scanner.pos + 1);
             Error.syntaxError(`Unknown token '${"\x1b[31;2;4m" + sentence.slice(changStart, scanner.pos + 1) + "\x1b[0m"}'`, {
@@ -233,10 +252,10 @@ class LexerParser {
             initState();
           }
           break;
-        case tokenType.read1:
+        case tokenType.readOrReturn1:
           if (char === 'e') {
             fragment += char;
-            state = tokenType.read2;
+            state = tokenType.readOrReturn2;
           } else if (this.isAlphabet(char) || this.isNumber(char)) {
             fragment += char;
             state = tokenType.identifier;
@@ -249,10 +268,13 @@ class LexerParser {
             initState();
           }
           break;
-        case tokenType.read2:
+        case tokenType.readOrReturn2:
           if (char === 'a') {
             fragment += char;
             state = tokenType.read3;
+          } else if (char === 't') {
+            fragment += char;
+            state = tokenType.return3;
           } else if (this.isAlphabet(char) || this.isNumber(char)) {
             fragment += char;
             state = tokenType.identifier;
@@ -294,10 +316,10 @@ class LexerParser {
             initState();
           }
           break;
-        case tokenType.print1:
-          if (char === 'r') {
+        case tokenType.func1:
+          if (char === 'u') {
             fragment += char;
-            state = tokenType.print2;
+            state = tokenType.func2;
           } else if (this.isAlphabet(char) || this.isNumber(char)) {
             fragment += char;
             state = tokenType.identifier;
@@ -310,26 +332,10 @@ class LexerParser {
             initState();
           }
           break;
-        case tokenType.print2:
-          if (char === 'i') {
-            fragment += char;
-            state = tokenType.print3;
-          } else if (this.isAlphabet(char) || this.isNumber(char)) {
-            fragment += char;
-            state = tokenType.identifier;
-          } else {
-            state = tokenType.identifier;
-            tokens.push(
-              new Token(state, fragment, line, start - fragment.length, start - 1)
-            );
-            state = tokenType.Initial;
-            initState();
-          }
-          break;
-        case tokenType.print3:
+        case tokenType.func2:
           if (char === 'n') {
             fragment += char;
-            state = tokenType.print4;
+            state = tokenType.func3;
           } else if (this.isAlphabet(char) || this.isNumber(char)) {
             fragment += char;
             state = tokenType.identifier;
@@ -342,10 +348,10 @@ class LexerParser {
             initState();
           }
           break;
-        case tokenType.print4:
-          if (char === 't') {
+        case tokenType.func3:
+          if (char === 'c') {
             fragment += char;
-            state = tokenType.print5;
+            state = tokenType.func4;
           } else if (this.isAlphabet(char) || this.isNumber(char)) {
             fragment += char;
             state = tokenType.identifier;
@@ -358,12 +364,195 @@ class LexerParser {
             initState();
           }
           break;
-        case tokenType.print5:
+        case tokenType.func4:
           if (this.isAlphabet(char) || this.isNumber(char)) {
             fragment += char;
             state = tokenType.identifier;
           } else {
-            state = tokenType.print;
+            state = tokenType.function;
+            tokens.push(
+              new Token(state, fragment, line, start - fragment.length, start - 1)
+            );
+            state = tokenType.Initial;
+            initState();
+          }
+          break;
+        case tokenType.begin1:
+          if (char === 'e') {
+            fragment += char;
+            state = tokenType.begin2;
+          } else if (this.isAlphabet(char) || this.isNumber(char)) {
+            fragment += char;
+            state = tokenType.identifier;
+          } else {
+            state = tokenType.identifier;
+            tokens.push(
+              new Token(state, fragment, line, start - fragment.length, start - 1)
+            );
+            state = tokenType.Initial;
+            initState();
+          }
+          break;
+        case tokenType.begin2:
+          if (char === 'g') {
+            fragment += char;
+            state = tokenType.begin3;
+          } else if (this.isAlphabet(char) || this.isNumber(char)) {
+            fragment += char;
+            state = tokenType.identifier;
+          } else {
+            state = tokenType.identifier;
+            tokens.push(
+              new Token(state, fragment, line, start - fragment.length, start - 1)
+            );
+            state = tokenType.Initial;
+            initState();
+          }
+          break;
+        case tokenType.begin3:
+          if (char === 'i') {
+            fragment += char;
+            state = tokenType.begin4;
+          } else if (this.isAlphabet(char) || this.isNumber(char)) {
+            fragment += char;
+            state = tokenType.identifier;
+          } else {
+            state = tokenType.identifier;
+            tokens.push(
+              new Token(state, fragment, line, start - fragment.length, start - 1)
+            );
+            state = tokenType.Initial;
+            initState();
+          }
+          break;
+        case tokenType.begin4:
+          if (char === 'n') {
+            fragment += char;
+            state = tokenType.begin5;
+          } else if (this.isAlphabet(char) || this.isNumber(char)) {
+            fragment += char;
+            state = tokenType.identifier;
+          } else {
+            state = tokenType.identifier;
+            tokens.push(
+              new Token(state, fragment, line, start - fragment.length, start - 1)
+            );
+            state = tokenType.Initial;
+            initState();
+          }
+          break;
+        case tokenType.begin5:
+          if (this.isAlphabet(char) || this.isNumber(char)) {
+            fragment += char;
+            state = tokenType.identifier;
+          } else {
+            state = tokenType.begin;
+            tokens.push(
+              new Token(state, fragment, line, start - fragment.length, start - 1)
+            );
+            state = tokenType.Initial;
+            initState();
+          }
+          break;
+        case tokenType.end1:
+          if (char === 'n') {
+            fragment += char;
+            state = tokenType.end2;
+          } else if (this.isAlphabet(char) || this.isNumber(char)) {
+            fragment += char;
+            state = tokenType.identifier;
+          } else {
+            state = tokenType.identifier;
+            tokens.push(
+              new Token(state, fragment, line, start - fragment.length, start - 1)
+            );
+            state = tokenType.Initial;
+            initState();
+          }
+          break;
+        case tokenType.end2:
+          if (char === 'd') {
+            fragment += char;
+            state = tokenType.end3;
+          } else if (this.isAlphabet(char) || this.isNumber(char)) {
+            fragment += char;
+            state = tokenType.identifier;
+          } else {
+            state = tokenType.identifier;
+            tokens.push(
+              new Token(state, fragment, line, start - fragment.length, start - 1)
+            );
+            state = tokenType.Initial;
+            initState();
+          }
+          break;
+        case tokenType.end3:
+          if (this.isAlphabet(char) || this.isNumber(char)) {
+            fragment += char;
+            state = tokenType.identifier;
+          } else {
+            state = tokenType.end;
+            tokens.push(
+              new Token(state, fragment, line, start - fragment.length, start - 1)
+            );
+            state = tokenType.Initial;
+            initState();
+          }
+          break;
+        case tokenType.return3:
+          if (char === 'u') {
+            fragment += char;
+            state = tokenType.return4;
+          } else if (this.isAlphabet(char) || this.isNumber(char)) {
+            fragment += char;
+            state = tokenType.identifier;
+          } else {
+            state = tokenType.identifier;
+            tokens.push(
+              new Token(state, fragment, line, start - fragment.length, start - 1)
+            );
+            state = tokenType.Initial;
+            initState();
+          }
+          break;
+        case tokenType.return4:
+          if (char === 'r') {
+            fragment += char;
+            state = tokenType.return5;
+          } else if (this.isAlphabet(char) || this.isNumber(char)) {
+            fragment += char;
+            state = tokenType.identifier;
+          } else {
+            state = tokenType.identifier;
+            tokens.push(
+              new Token(state, fragment, line, start - fragment.length, start - 1)
+            );
+            state = tokenType.Initial;
+            initState();
+          }
+          break;
+        case tokenType.return5:
+          if (char === 'n') {
+            fragment += char;
+            state = tokenType.return6;
+          } else if (this.isAlphabet(char) || this.isNumber(char)) {
+            fragment += char;
+            state = tokenType.identifier;
+          } else {
+            state = tokenType.identifier;
+            tokens.push(
+              new Token(state, fragment, line, start - fragment.length, start - 1)
+            );
+            state = tokenType.Initial;
+            initState();
+          }
+          break;
+        case tokenType.return6:
+          if (this.isAlphabet(char) || this.isNumber(char)) {
+            fragment += char;
+            state = tokenType.identifier;
+          } else {
+            state = tokenType.return;
             tokens.push(
               new Token(state, fragment, line, start - fragment.length, start - 1)
             );
@@ -389,6 +578,20 @@ class LexerParser {
             initState();
           }
           break;
+        case tokenType.quotation:
+          if (char === '"') {
+            tokens.push(
+              new Token(tokenType.literal, fragment + char, line, start - fragment.length, start - 1)
+            );
+            state = tokenType.Initial;
+          } else if (this.isLine(char)) {
+            fragment += char;
+            line++;
+            start = 0;
+          } else {
+            fragment += char;
+          }
+          break
         case tokenType.leftBracket:
         case tokenType.rightBracket:
         case tokenType.plus:
@@ -397,6 +600,8 @@ class LexerParser {
         case tokenType.divide:
         case tokenType.semicolon:
         case tokenType.equal:
+        case tokenType.comma:
+        case tokenType.colon:
           tokens.push(
             new Token(state, fragment, line, start - fragment.length, start - 1)
           );

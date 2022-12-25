@@ -12,46 +12,59 @@ const AstType = {
   'DivideExpression': 'DivideExpression',
   'UnaryExpression': 'UnaryExpression',
   'BinaryExpression': 'BinaryExpression',
-  'PrintCallExpression': 'PrintCallExpression',
   'ExpressionStatement': 'ExpressionStatement',
-  'AssignmentExpression': 'AssignmentExpression'
+  'AssignmentExpression': 'AssignmentExpression',
+  'FunctionExpression': 'FunctionExpression',
+  "BlockStatement": "BlockStatement",
+  "ReturnStatement": "ReturnStatement",
+  "CallExpression": "CallExpression"
 };
 
-const expressions =
-  [
-    `Sentence       ->  Defined |
-                        Print | 
-                        Function | 
-                        null`,
-    `Sentence'      ->  $declaration Semicolon Sentence |
-                        equal Expression $declarationInit Semicolon Sentence |
-                        Identifier $expressionStatement equal Expression $assignment Semicolon Sentence`,
-    'Semicolon      ->  semicolon Semicolon`',
-    'Semicolon`     ->  semicolon Semicolon` | null',
-    'Expression     ->  AddExpression',
-    'AddExpression  ->  MulExpression AddExpression1',
-    'AddExpression1 ->  Operator1 MulExpression $binaryExpression AddExpression1 | null',
-    'MulExpression  ->  Literal MulExpression1',
-    'MulExpression1 ->  Operator2 Literal $binaryExpression MulExpression1 | null',
-    'Identifier     ->  identifier',
-    'Literal        ->  leftBracket AddExpression rightBracket | literal | identifier | Operator1 literal $unaryExpression',
-    'Operator1      ->  plus | minus',
-    'Operator2      ->  multiply | divide',
-    "Defined        ->  defined Identifier Defined'",
-    `Defined'       ->  $declaration Semicolon Sentence |
-                        equal Expression $declarationInit Semicolon Sentence |
-                        Identifier $expressionStatement equal Expression $assignment Semicolon Sentence`,
-    'Print          ->  print leftBracket Expression rightBracket $printArguments Semicolon Sentence',
-    "Function       ->  function Identifier leftBracket Arguments rightBracket begin Sentence Function'",
-    "Function'      ->  end Semicolon Sentence | return end Semicolon Sentence",
-    "Arguments      ->  Literal Arguments'",
-    "Arguments'     ->  null | comma Literal"
-  ];
-const terminalSymbols = 'defined|identifier|equal|semicolon|leftBracket|rightBracket|literal|plus|minus|multiply|divide|print|function|begin|end|return|comma'.split('|');
+const grammars =
+[
+  `Sentence         ->  SingleStatement Semicolon Sentence | null`,
+  'SingleStatement  ->  Defined | Function | Assignment | Literal | Block',
+  'Semicolon        ->  semicolon Semicolon`',
+  'Semicolon`       ->  semicolon Semicolon` | null',
+  'Expression       ->  AddExpression',
+  'AddExpression    ->  MulExpression AddExpression1',
+  'AddExpression1   ->  Operator1 MulExpression $binaryExpression AddExpression1 | null',
+  `MulExpression    ->  Identifier MulExpression' | Literal MulExpression1`,
+  `MulExpression'   ->  MulExpression1 | CallSuffix MulExpression1 | null`,
+  'MulExpression1   ->  Operator2 MulExpression2 | null',
+  `MulExpression2   ->  Identifier MulExpression'' | Literal $binaryExpression MulExpression1`,
+  `MulExpression''  ->  $binaryExpression MulExpression1 | CallSuffix $binaryExpression MulExpression1`,
+  'Operator1        ->  plus | minus',
+  'Operator2        ->  multiply | divide',
+  'Literal          ->  literal | leftBracket AddExpression rightBracket | Operator1 Literal1',
+  `Literal1         ->  literal $unaryExpression | Identifier Literal2 $unaryExpression`,
+  `Literal2         ->  CallSuffix | null`,
+  'Identifier       ->  identifier',
+  "Defined          ->  defined Identifier Defined'",
+  `Defined'         ->  equal Defined''  | $declaration null`,
+  `Defined''        ->  Expression $declarationInit | Block $declarationInit`,
+  'Assignment       ->  Identifier Assignment1',
+  'Assignment1      ->  $expressionStatement equal Expression $assignment | CallSuffix | null',
+  "Block            ->  begin $appendBlock Sentence Block'",
+  "Block'           ->  end $popBlock | return Block''",
+  "Block''          ->  Expression Block''' | Function Block'''",
+  "Block'''         ->  $assignReturn Semicolon end $popBlock",
+  "Function         ->  function identifier $assignFunctionId leftBracket Params rightBracket colon Block $assignFunctionBody",
+  "Arguments        ->  Expression $assignArgument Arguments' | null",
+  "Arguments'       ->  Comma Expression $assignArgument Arguments' | null",
+  "Params           ->  Identifier $assignParam Params' | null",
+  "Params'          ->  Comma Identifier $assignParam | null",
+  'Comma            ->  comma',
+  'Colon            ->  colon',
+  'CallSuffix       ->  $callExpression leftBracket Arguments rightBracket $expressionStatement',
+];
+const terminalSymbols =
+  'defined|identifier|equal|semicolon|leftBracket|rightBracket|literal|plus|minus|multiply|divide|function|begin|end|return|comma|colon'
+    .split('|');
 
-const ll1 = makeLL1(expressions, terminalSymbols);
+const ll1 = makeLL1(grammars, terminalSymbols);
 
-const defined = (kind, line, start, end) => {
+const _defined = (kind, line, start, end) => {
   return {
     type: AstType['VariableDeclaration'],
     line,
@@ -62,7 +75,7 @@ const defined = (kind, line, start, end) => {
   };
 };
 
-const identifier = (name, line, start, end) => {
+const _identifier = (name, line, start, end) => {
   return {
     type: AstType['Identifier'],
     line,
@@ -72,18 +85,21 @@ const identifier = (name, line, start, end) => {
   };
 };
 
-const literal = (raw, line, start, end) => {
+const _literal = (raw, line, start, end) => {
+  let value
+  if(/^[0-9]+([.]{1}[0-9]+){0,1}$/.test(raw)) value = Number(raw)
+  else if(raw[0] === '"' && raw[raw.length - 1] === '"') value = String(raw)
   return {
     type: AstType['Literal'],
     line,
     start,
     end,
-    value: Number(raw),
+    value,
     raw
   };
 };
 
-const equal = (operator, line, start, end) => {
+const _equal = (operator, line, start, end) => {
   return {
     type: AstType['EqualExpression'],
     line,
@@ -93,7 +109,7 @@ const equal = (operator, line, start, end) => {
   };
 };
 
-const plus = (operator, line, start, end) => {
+const _plus = (operator, line, start, end) => {
   return {
     type: AstType['PlusExpression'],
     line,
@@ -103,7 +119,7 @@ const plus = (operator, line, start, end) => {
   };
 };
 
-const minus = (operator, line, start, end) => {
+const _minus = (operator, line, start, end) => {
   return {
     type: AstType['MinusExpression'],
     line,
@@ -113,7 +129,7 @@ const minus = (operator, line, start, end) => {
   };
 };
 
-const multiply = (operator, line, start, end) => {
+const _multiply = (operator, line, start, end) => {
   return {
     type: AstType['MultiplyExpression'],
     line,
@@ -123,7 +139,7 @@ const multiply = (operator, line, start, end) => {
   };
 };
 
-const divide = (operator, line, start, end) => {
+const _divide = (operator, line, start, end) => {
   return {
     type: AstType['DivideExpression'],
     line,
@@ -141,7 +157,7 @@ const $unaryExpression = (astList) => {
     type: AstType['UnaryExpression'],
     line: operator.line,
     start: operator.start,
-    end: literal.end,
+    end: operator.end,
     operator: operator.operator,
     argument: literal
   };
@@ -157,7 +173,7 @@ const $binaryExpression = (astList) => {
     type: AstType['BinaryExpression'],
     line: left.line,
     start: left.start,
-    end: right.end,
+    end: left.end,
     left: left,
     operator: operator.operator,
     right: right
@@ -172,7 +188,7 @@ const $declaration = (astList) => {
   const ast = createVariableDeclarator(
     declarator.line,
     declarator.start,
-    identifier.end,
+    declarator.end,
     identifier
   );
   declarator.declarations.push(ast);
@@ -187,7 +203,7 @@ const $declarationInit = (astList) => {
   const ast = createVariableDeclarator(
     declarator.line,
     declarator.start,
-    expression.end,
+    declarator.end,
     identifier,
     expression
   );
@@ -198,13 +214,9 @@ const $declarationInit = (astList) => {
 const $expressionStatement = (astList) => {
   const startIdx = astList.length - 1
   const identifier = astList[startIdx];
-  const ast = {
-    type: AstType["ExpressionStatement"],
-    line: identifier.line,
-    start: identifier.start,
-    end: identifier.end,
-    expression: identifier
-  };
+  const ast = createExpressionStatement(
+    identifier.line, identifier.start, identifier.end, identifier
+  )
   astList.splice(startIdx, 1, ast);
 };
 
@@ -217,7 +229,7 @@ const $assignment = (astList) => {
     type: AstType["AssignmentExpression"],
     line: statement.line,
     start: statement.start,
-    end: expression.end,
+    end: statement.end,
     operator: operator.operator,
     left: statement.expression,
     right: expression
@@ -226,22 +238,100 @@ const $assignment = (astList) => {
   astList.splice(startIdx + 1, 2);
 };
 
-const print = (_, line, start, end) => {
+const _function = (_, line, start, end) => {
   return {
-    type: AstType['PrintCallExpression'],
+    type: AstType["FunctionExpression"],
     line,
     start,
     end,
-    arguments: []
+    id: null,
+    params: [],
+    body: null
   }
 }
 
-const $printArguments = (astList) => {
+const $assignFunctionId = (astList) => {
   const startIdx = astList.length - 2
-  const print = astList[startIdx]
-  const args = astList[startIdx + 1]
-  print.arguments.push(args)
+  const func = astList[startIdx]
+  const identifier = astList[startIdx + 1]
+  func.id = identifier
   astList.splice(startIdx + 1, 1)
+}
+
+const $assignParam = (astList) => {
+  const startIdx = astList.length - 2
+  const func = astList[startIdx]
+  const identifier = astList[startIdx + 1]
+  func.params.push(identifier)
+  astList.splice(startIdx + 1, 1)
+}
+
+const $assignArgument = (astList) => {
+  const startIdx = astList.length - 2
+  const call = astList[startIdx]
+  const identifier = astList[startIdx + 1]
+  call.arguments.push(identifier)
+  astList.splice(startIdx + 1, 1)
+}
+
+const _begin = (_, line, start, end) => {
+  return {
+    type: AstType['BlockStatement'],
+    line,
+    start,
+    end,
+    body: []
+  }
+}
+
+const $appendBlock = (astList, blocks) => {
+  const startIdx = astList.length - 1
+  const block = astList[startIdx]
+  blocks.push(block.body)
+}
+
+const $popBlock = (_, blocks) => {
+  blocks.pop()
+}
+
+const $assignFunctionBody = (astList) => {
+  const startIdx = astList.length - 2
+  const func = astList[startIdx]
+  const body = astList[startIdx + 1]
+  func.body = body
+  astList.splice(startIdx + 1, 1)
+}
+
+const _return = (_, line, start, end) => {
+  return {
+    type: AstType["ReturnStatement"],
+    line,
+    start,
+    end,
+    argument: null
+  }
+}
+
+const $assignReturn = (astList) => {
+  const startIdx = astList.length - 2
+  const retur = astList[startIdx]
+  const body = astList[startIdx + 1]
+  retur.argument = body
+  astList.splice(startIdx + 1, 1)
+}
+
+const $callExpression = (astList) => {
+  const startIdx = astList.length - 1
+  const identifier = astList[startIdx]
+  const callExpression = {
+    type: AstType["CallExpression"],
+    line: identifier.line,
+    start: identifier.start,
+    end: identifier.end,
+    callee: identifier,
+    arguments: []
+  }
+  astList.splice(startIdx, 1, callExpression)
 }
 
 // creator AST
@@ -256,26 +346,45 @@ const createVariableDeclarator = (
   init,
 });
 
+const createExpressionStatement = (
+  line, start, end, expression = null
+) => ({
+  type: AstType["ExpressionStatement"],
+  line,
+  start,
+  end,
+  expression
+});
+
 module.exports = {
   startSymbol: ll1.startSymbol,
   predictSet: ll1.predictSet,
   AstType,
   constructor: {
-    defined,
-    identifier,
-    literal,
-    equal,
-    plus,
-    minus,
-    multiply,
-    divide,
+    _defined,
+    _identifier,
+    _literal,
+    _equal,
+    _plus,
+    _minus,
+    _multiply,
+    _divide,
+    _function,
     $unaryExpression,
     $binaryExpression,
     $declaration,
     $declarationInit,
     $expressionStatement,
     $assignment,
-    print,
-    $printArguments
+    $assignFunctionId,
+    $assignArgument,
+    _begin,
+    $appendBlock,
+    $popBlock,
+    $assignFunctionBody,
+    _return,
+    $assignReturn,
+    $callExpression,
+    $assignParam
   }
 };

@@ -11,11 +11,16 @@ class SyntacticParser {
   }
 
   parse(tokens) {
+    const blocks = []
     const astList = []
+    blocks.push(astList)
     const stack = []
     stack.push(this.startSymbol)
 
-    tokens.push(new Token($))
+    const tail = tokens[tokens.length - 1]
+    tokens.push(new Token(
+      $, tail.value, tail.line, tail.start, tail.end
+    ))
     const scanner = new Scanner(tokens)
 
     let token
@@ -27,19 +32,19 @@ class SyntacticParser {
         const message = `Unexpected token '${"\x1b[31;2;4m" + token.value + "\x1b[0m"}'`;
         Error.syntaxError(message, {
           message: '',
-          start: token.start,
-          end: token.end
+          line: token.line,
+          start: token.start
         });
       }
 
       const expressionMap = this.predictSet.get(terminalSymbol)
       const left = stack.pop()
-      if(left[0] === $) {
-        this.constructor[left]?.(astList)
+      if (left[0] === $) {
+        this.constructor[left]?.(blocks[blocks.length - 1], blocks)
         continue
-      } else if(left === token.type) {
-        const child = this.constructor[token.type]?.(token.value, token.line, token.start, token.end)
-        if(child) astList.push(child)
+      } else if (left === token.type) {
+        const child = this.constructor[`_${token.type}`]?.(token.value, token.line, token.start, token.end)
+        if (child) blocks[blocks.length - 1].push(child)
         scanner.read()
         continue
       }
@@ -56,7 +61,8 @@ class SyntacticParser {
       const right = expressionMap.get(left)
       if (right[0] === EMPTY_CHAIN) continue
       for (let i = right.length - 1; i >= 0; --i)
-        stack.push(right[i])
+        if (right[i] === EMPTY_CHAIN) continue
+        else stack.push(right[i])
     }
 
     return {

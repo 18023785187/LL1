@@ -1,7 +1,7 @@
 const { makeFirstSet, makeUnionFirstSet } = require('./makeFirstSet');
 const { makeFollowSet } = require('./makeFollowSet');
 const { mergeSet } = require('./utils');
-const { EMPTY_CHAIN } = require('./constants');
+const { EMPTY_CHAIN, $ } = require('./constants');
 
 /**
   对于形似 A -> ab 的产生式，其 SELECT 集为 FIRST(ab)。
@@ -23,8 +23,13 @@ function makeSelectSet(
 
   rules.forEach(({ left, right }) => {
     right.forEach(chainSet => {
-      const chain = chainSet[0];
+      let pos = 0
+      let chain = chainSet[pos];
       const newRule = { left, right: chainSet };
+
+      while(pos < chainSet.length && chain && chain[0] === $) {
+        chain = chainSet[++pos]
+      }
 
       if (chain === EMPTY_CHAIN) {
         selectSet.set(newRule, followSet[left]);

@@ -88,7 +88,7 @@ function compiler(sentence) {
     (args) => {
       const tokens = lexerParser.tokenize(args[0].slice(1, -1));
       const ast = syntacticParser.parse(tokens);
-      return handle(ast, null, globalScope)
+      return handle(ast, null, new Scope(globalScope))
     }
   ))
 
@@ -106,8 +106,14 @@ function compiler(sentence) {
   handle(ast, null, globalScope)
   function handle(root, gist, scope) {
     switch (root.type) {
-      case 'Program':
-      case AstType['BlockStatement']:
+      case 'Program': 
+      case AstType['BlockStatement']: {
+        if(root.type === 'Program') {}
+        else if(gist) {
+          scope = gist
+        } else {
+          scope = new Scope(scope)
+        }
         let __result__
         for (let i = 0; i < root.body.length; ++i) {
           __result__ = handle(root.body[i], null, scope);
@@ -115,6 +121,7 @@ function compiler(sentence) {
 
         const tail = root.body[root.body.length - 1]
         return tail?.type === AstType['ReturnStatement'] ? __result__ : undefined;
+      }
       case AstType['VariableDeclaration']:
         const declarations = root.declarations;
         for (let i = 0; i < declarations.length; ++i) {
@@ -278,7 +285,7 @@ function compiler(sentence) {
           func.func(arguments.map(
             argument => {
               const val = handle(argument, null, scope)
-              return val.type === 'Variable' ? toVal(val) : val
+              return val?.type === 'Variable' ? toVal(val) : val
             }
           ))
         } else {
@@ -299,7 +306,7 @@ function compiler(sentence) {
               )
             }
           })
-          const result = handle(func.body, null, func.scope)
+          const result = handle(func.body, func.scope, func.scope)
           func.scope.clear()
           return result
         }

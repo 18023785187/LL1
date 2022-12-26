@@ -17,7 +17,7 @@ class SyntacticParser {
     const stack = []
     stack.push(this.startSymbol)
 
-    const tail = tokens[tokens.length - 1]
+    const tail = tokens[tokens.length - 1] ?? { value: '', line: '', start: '', end: '' }
     tokens.push(new Token(
       $, tail.value, tail.line, tail.start, tail.end
     ))

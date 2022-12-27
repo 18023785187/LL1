@@ -14,7 +14,7 @@ begin
       begin return num1 + num2; end;
 
       return sum;
-    end;
+    end
 
   return sum;
 end;

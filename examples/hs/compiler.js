@@ -310,7 +310,7 @@ function compiler(sentence) {
       case AstType['ReturnStatement']:
         return handle(root.argument, null, scope)
       case AstType['IfStatement']:
-        const test = handle(root.test, null, scope)
+        const test = toVal(handle(root.test, null, scope))
         return handle(root[test ? 'consequent' : 'alternate'], null, scope)
       default:
         break;

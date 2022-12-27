@@ -2,25 +2,22 @@
   这里是注释！！！
 #
 
-
-func sum(num1, num2):
+func test(log):
 begin
-  print(num1, num2);
+  print(log);
 
-  func log(fn):
-  begin
-    fn(print);
+  read sum = 
+    if(0): begin end
+    elif(log):
+    begin
+      func sum(num1, num2):
+      begin return num1 + num2; end;
 
-    def num3 = 6;
+      return sum;
+    end;
 
-    read num4 = 6 + num3;
-
-    print(sum, print(1), num4, fn);
-  end;
-
-  log(print);
-
-  return log;
+  return sum;
 end;
 
-sum(1,2);
+def sum = test(print);
+print(sum, sum(1, 2));

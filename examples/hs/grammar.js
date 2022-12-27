@@ -17,15 +17,18 @@ const AstType = {
   'FunctionExpression': 'FunctionExpression',
   "BlockStatement": "BlockStatement",
   "ReturnStatement": "ReturnStatement",
-  "CallExpression": "CallExpression"
+  "CallExpression": "CallExpression",
+  'IfStatement': 'IfStatement'
 };
 
 const grammars =
 [
   `Sentence         ->  SingleStatement Semicolon Sentence | null`,
-  'SingleStatement  ->  Defined | Function | Assignment | Literal | Block',
+  'SingleStatement  ->  Defined | Function | Assignment | Literal | Block | Condition',
+  // 分号
   'Semicolon        ->  semicolon Semicolon`',
   'Semicolon`       ->  semicolon Semicolon` | null',
+  // 算术运算
   'Expression       ->  AddExpression',
   'AddExpression    ->  MulExpression AddExpression1',
   'AddExpression1   ->  Operator1 MulExpression $binaryExpression AddExpression1 | null',
@@ -40,16 +43,20 @@ const grammars =
   `Literal1         ->  literal $unaryExpression | Identifier Literal2 $unaryExpression`,
   `Literal2         ->  CallSuffix | null`,
   'Identifier       ->  identifier',
+  // 声明
   "Defined          ->  defined Identifier Defined'",
-  `Defined'         ->  equal Defined''  | $declaration null`,
-  `Defined''        ->  Expression $declarationInit | Block $declarationInit`,
+  `Defined'         ->  equal Defined'' | $declaration null`,
+  `Defined''        ->  Expression $declarationInit | Block $declarationInit | Condition $declarationInit`,
+  // 赋值
   'Assignment       ->  Identifier Assignment1',
   'Assignment1      ->  $expressionStatement equal Expression $assignment | CallSuffix | null',
+  // 块作用域
   "Block            ->  begin $appendBlock Sentence Block'",
   "Block'           ->  end $popBlock | return Block''",
-  "Block''          ->  Expression Block''' | Function Block'''",
+  "Block''          ->  Expression Block''' | Function Block''' | Condition Block'''",
   "Block'''         ->  $assignReturn Semicolon end $popBlock",
-  "Function         ->  function identifier $assignFunctionId leftBracket Params rightBracket colon Block $assignFunctionBody",
+  // 方法
+  "Function         ->  function identifier $assignFunctionId leftBracket Params rightBracket Colon Block $assignFunctionBody",
   "Arguments        ->  Expression $assignArgument Arguments' | null",
   "Arguments'       ->  Comma Expression $assignArgument Arguments' | null",
   "Params           ->  Identifier $assignParam Params' | null",
@@ -57,9 +64,14 @@ const grammars =
   'Comma            ->  comma',
   'Colon            ->  colon',
   'CallSuffix       ->  $callExpression leftBracket Arguments rightBracket $expressionStatement',
+  // 条件语句
+  'Condition        ->  If Elif',
+  'If               ->  if leftBracket Expression rightBracket $appendIfTest Colon Block $appendIfConsequent',
+  'Elif             ->  elif leftBracket Expression rightBracket $appendIfTest Colon Block $appendIfConsequent $appendIfAlternate Elif | Else | null',
+  'Else             ->  else Colon Block $appendIfAlternate'
 ];
 const terminalSymbols =
-  'defined|identifier|equal|semicolon|leftBracket|rightBracket|literal|plus|minus|multiply|divide|function|begin|end|return|comma|colon'
+  'defined|identifier|equal|semicolon|leftBracket|rightBracket|literal|plus|minus|multiply|divide|function|begin|end|return|comma|colon|if|elif|else'
     .split('|');
 
 const ll1 = makeLL1(grammars, terminalSymbols);
@@ -334,6 +346,44 @@ const $callExpression = (astList) => {
   astList.splice(startIdx, 1, callExpression)
 }
 
+const _if = (_, line, start, end) => {
+  return {
+    type: AstType['IfStatement'],
+    line, start, end,
+    test: null,
+    consequent: null
+  }
+}
+const _elif = _if
+
+const $appendIfTest = (astList) => {
+  const startIdx = astList.length - 2
+  const ifStatement = astList[startIdx]
+  const test = astList[startIdx + 1]
+  ifStatement.test = test
+  astList.splice(startIdx + 1, 1)
+}
+
+const $appendIfConsequent = (astList) => {
+  const startIdx = astList.length - 2
+  const ifStatement = astList[startIdx]
+  const consequent = astList[startIdx + 1]
+  ifStatement.consequent = consequent
+  astList.splice(startIdx + 1, 1)
+}
+
+const $appendIfAlternate = (astList) => {
+  const startIdx = astList.length - 2
+  const ifStatement = astList[startIdx]
+  const alternate = astList[startIdx + 1]
+  let cur = ifStatement
+  while(cur.alternate && cur.alternate.type === AstType['IfStatement']) {
+    cur = cur.alternate
+  }
+  cur.alternate = alternate
+  astList.splice(startIdx + 1, 1)
+}
+
 // creator AST
 const createVariableDeclarator = (
   line, start, end, id, init = null
@@ -385,6 +435,11 @@ module.exports = {
     _return,
     $assignReturn,
     $callExpression,
-    $assignParam
+    $assignParam,
+    _if,
+    $appendIfTest,
+    $appendIfConsequent,
+    _elif,
+    $appendIfAlternate
   }
 };

@@ -34,7 +34,7 @@ const tokenType = {
   begin3: 'begin3',
   begin4: 'begin4',
   begin5: 'begin5',
-  end1: 'end1',
+  endElifElse1: 'endElifElse1',
   end2: 'end2',
   end3: 'end3',
   return2: 'return2',
@@ -42,6 +42,13 @@ const tokenType = {
   return4: 'return4',
   return5: 'return5',
   return6: 'return6',
+  if1: 'if1',
+  if2: 'if2',
+  elifElse1: 'elifElse1',
+  elif3: 'elif3',
+  elif4: 'elif4',
+  else3: 'else3',
+  else4: 'else4',
   defined: 'defined',
   function: 'function',
   begin: 'begin',
@@ -49,6 +56,9 @@ const tokenType = {
   return: 'return',
   comment: 'comment',
   quotation: 'quotation',
+  if: 'if',
+  elif: 'elif',
+  else: 'else'
 };
 
 class LexerParser {
@@ -103,7 +113,10 @@ class LexerParser {
             state = tokenType.begin1
             break
           case 'e':
-            state = tokenType.end1
+            state = tokenType.endElifElse1
+            break
+          case 'i':
+            state = tokenType.if1
             break
           default:
             state = tokenType.identifier;
@@ -454,10 +467,13 @@ class LexerParser {
             initState();
           }
           break;
-        case tokenType.end1:
+        case tokenType.endElifElse1:
           if (char === 'n') {
             fragment += char;
             state = tokenType.end2;
+          } else if (char === 'l') {
+            fragment += char;
+            state = tokenType.elifElse1;
           } else if (this.isAlphabet(char) || this.isNumber(char)) {
             fragment += char;
             state = tokenType.identifier;
@@ -492,6 +508,112 @@ class LexerParser {
             state = tokenType.identifier;
           } else {
             state = tokenType.end;
+            tokens.push(
+              new Token(state, fragment, line, start - fragment.length, start - 1)
+            );
+            state = tokenType.Initial;
+            initState();
+          }
+          break;
+        case tokenType.elifElse1:
+          if (char === 'i') {
+            fragment += char;
+            state = tokenType.elif3;
+          } else if (char === 's') {
+            fragment += char;
+            state = tokenType.else3;
+          } else if (this.isAlphabet(char) || this.isNumber(char)) {
+            fragment += char;
+            state = tokenType.identifier;
+          } else {
+            state = tokenType.identifier;
+            tokens.push(
+              new Token(state, fragment, line, start - fragment.length, start - 1)
+            );
+            state = tokenType.Initial;
+            initState();
+          }
+          break;
+        case tokenType.elif3:
+          if (char === 'f') {
+            fragment += char;
+            state = tokenType.elif4;
+          } else if (this.isAlphabet(char) || this.isNumber(char)) {
+            fragment += char;
+            state = tokenType.identifier;
+          } else {
+            state = tokenType.identifier;
+            tokens.push(
+              new Token(state, fragment, line, start - fragment.length, start - 1)
+            );
+            state = tokenType.Initial;
+            initState();
+          }
+          break;
+        case tokenType.elif4:
+          if (this.isAlphabet(char) || this.isNumber(char)) {
+            fragment += char;
+            state = tokenType.identifier;
+          } else {
+            state = tokenType.elif;
+            tokens.push(
+              new Token(state, fragment, line, start - fragment.length, start - 1)
+            );
+            state = tokenType.Initial;
+            initState();
+          }
+          break;
+        case tokenType.else3:
+          if (char === 'e') {
+            fragment += char;
+            state = tokenType.else4;
+          } else if (this.isAlphabet(char) || this.isNumber(char)) {
+            fragment += char;
+            state = tokenType.identifier;
+          } else {
+            state = tokenType.identifier;
+            tokens.push(
+              new Token(state, fragment, line, start - fragment.length, start - 1)
+            );
+            state = tokenType.Initial;
+            initState();
+          }
+          break;
+        case tokenType.else4:
+          if (this.isAlphabet(char) || this.isNumber(char)) {
+            fragment += char;
+            state = tokenType.identifier;
+          } else {
+            state = tokenType.else;
+            tokens.push(
+              new Token(state, fragment, line, start - fragment.length, start - 1)
+            );
+            state = tokenType.Initial;
+            initState();
+          }
+          break;
+        case tokenType.if1:
+          if (char === 'f') {
+            fragment += char;
+            state = tokenType.if2;
+          } else if (this.isAlphabet(char) || this.isNumber(char)) {
+            fragment += char;
+            state = tokenType.identifier;
+          } else {
+            state = tokenType.identifier;
+            tokens.push(
+              new Token(state, fragment, line, start - fragment.length, start - 1)
+            );
+            state = tokenType.Initial;
+            initState();
+          }
+          break;
+        case tokenType.if2:
+          if (this.isAlphabet(char) || this.isNumber(char)) {
+            fragment += char;
+            state = tokenType.identifier;
+          } else {
+            state = tokenType.if;
             tokens.push(
               new Token(state, fragment, line, start - fragment.length, start - 1)
             );

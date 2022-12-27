@@ -11,12 +11,16 @@
 7. print 方法用于打印变量值
 8. eval 作用类似 js 的 eval
 9. 注释语法为开头结尾 #，中间注释
+10. 支持条件语句 if ... elif ... else
+11. if 和块级作用域具有返回值
 
 #### 使用
 
 命令行执行 `npm link`，后执行 `hs <filename>` 即可。
 
 或直接执行 `node index.js`，此方法只会运行 `input.hs` 文件。
+
+编译器实现使用 ES6 以上的语法，请确保你的 node 版本在 14 以上。
 
 #### 例子
 
@@ -70,4 +74,21 @@ begin
 end;
 
 print(a); # 12 #
+```
+
+###### 条件语句
+
+```javascript
+if(0):
+begin
+  print(0);
+end
+elif(1):
+begin
+  print(1);
+end
+else:
+begin
+  print(2);
+end;
 ```

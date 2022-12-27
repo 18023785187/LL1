@@ -134,21 +134,17 @@ function compiler(sentence) {
         const init = root.init;
         if (!scope.has(id.name)) {
           if (gist === 'def') {
+            const val = init ? handle(init, null, scope) : undefined
             scope.scope.set(
               id.name,
-              new Variable(
-                false,
-                init ? handle(init, null, scope) : undefined
-              )
+              val?.__system__ ? val : new Variable(false, val)
             );
           } else if (gist === 'read') {
             if (init) {
+              const val = handle(init, null, scope)
               scope.scope.set(
                 id.name,
-                new Variable(
-                  true,
-                  handle(init, null, scope)
-                )
+                val?.__system__ ? val : new Variable(true, val)
               );
             } else {
               Error.syntaxError(
@@ -285,7 +281,7 @@ function compiler(sentence) {
           func.func(arguments.map(
             argument => {
               const val = handle(argument, null, scope)
-              return val?.type === 'Variable' ? toVal(val) : val
+              return toVal(val)
             }
           ))
         } else {
@@ -313,6 +309,9 @@ function compiler(sentence) {
         break
       case AstType['ReturnStatement']:
         return handle(root.argument, null, scope)
+      case AstType['IfStatement']:
+        const test = handle(root.test, null, scope)
+        return handle(root[test ? 'consequent' : 'alternate'], null, scope)
       default:
         break;
     }

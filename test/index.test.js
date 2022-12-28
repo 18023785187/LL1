@@ -1,5 +1,5 @@
-const { makeLL1 } = require('../src')
-const { EMPTY_CHAIN, $ } = require('../src/constants')
+import { makeLL1 } from '../src'
+import { EMPTY_CHAIN, $ } from '../src/constants'
 
 describe('test index.js', () => {
   test('makeLL1', () => {

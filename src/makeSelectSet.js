@@ -1,7 +1,7 @@
-const { makeFirstSet, makeUnionFirstSet } = require('./makeFirstSet');
-const { makeFollowSet } = require('./makeFollowSet');
-const { mergeSet } = require('./utils');
-const { EMPTY_CHAIN, $ } = require('./constants');
+import { makeFirstSet, makeUnionFirstSet } from './makeFirstSet.js';
+import { makeFollowSet } from './makeFollowSet.js';
+import { mergeSet } from './utils.js';
+import { EMPTY_CHAIN, $ } from './constants.js';
 
 /**
   对于形似 A -> ab 的产生式，其 SELECT 集为 FIRST(ab)。
@@ -13,7 +13,7 @@ const { EMPTY_CHAIN, $ } = require('./constants');
     E -> id | null 拆分成 E -> id，E -> null。
     2、运用规则求出每个产生式的 SELECT 集。
  */
-function makeSelectSet(
+export function makeSelectSet(
   rules,
   terminalSymbols,
   firstSet = makeFirstSet(rules, terminalSymbols),
@@ -42,7 +42,7 @@ function makeSelectSet(
   return selectSet;
 }
 
-function isNotIntersect(selectSet) {
+export function isNotIntersect(selectSet) {
   const map = new Map();
 
   for (const [{ left }, sets] of selectSet) {
@@ -60,5 +60,3 @@ function isNotIntersect(selectSet) {
 
   return true;
 }
-
-module.exports = { makeSelectSet, isNotIntersect };

@@ -1,6 +1,6 @@
-const { makeFollowSet } = require('../src/makeFollowSet')
-const { splitGrammars } = require('../src/splitGrammars')
-const { $ } = require('../src/constants')
+import { makeFollowSet } from '../src/makeFollowSet'
+import { splitGrammars } from '../src/splitGrammars'
+import { $ } from '../src/constants'
 
 describe('test makeFollowSet.js', () => {
   test('single grammar', () => {

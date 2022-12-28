@@ -1,15 +1,28 @@
 {
-  "name": "ll1",
-  "version": "1.0.0",
+  "name": "ll1-grammar",
+  "version": "1.0.3",
   "description": "根据产生式求取 First、Follow、Select 集和预测分析表",
-  "main": "index.js",
+  "main": "build/ll1.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "cross-env NODE_ENV=production webpack --config scripts/build.js",
+    "babel": "babel src -d lib"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
-  "dependencies": {
-    "jest": "^29.3.1"
+  "devDependencies": {
+    "@babel/cli": "^7.20.7",
+    "@babel/core": "^7.20.7",
+    "@babel/node": "^7.20.7",
+    "@babel/plugin-transform-runtime": "^7.19.6",
+    "@babel/preset-env": "^7.20.2",
+    "babel-loader": "^9.1.0",
+    "cross-env": "^7.0.3",
+    "jest": "^29.3.1",
+    "terser-webpack-plugin": "^5.3.1",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1",
+    "webpack-merge": "^5.8.0"
   }
 }

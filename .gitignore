@@ -9,9 +9,6 @@
 /coverage
 
 # production
-/build
-/dll
-/dll_bundle
 
 # misc
 .DS_Store

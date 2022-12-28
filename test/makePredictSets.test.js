@@ -1,7 +1,7 @@
-const { makeSelectSet } = require('../src/makeSelectSet')
-const { makePredictSet } = require('../src/makePredictSet')
-const { splitGrammars } = require('../src/splitGrammars')
-const { $, EMPTY_CHAIN } = require('../src/constants')
+import { makeSelectSet } from '../src/makeSelectSet'
+import { makePredictSet } from '../src/makePredictSet'
+import { splitGrammars } from '../src/splitGrammars'
+import { $, EMPTY_CHAIN } from '../src/constants'
 
 describe('test makePredictSets.js', () => {
   test('grammar', () => {

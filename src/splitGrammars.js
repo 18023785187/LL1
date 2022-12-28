@@ -1,6 +1,5 @@
-const { EMPTY_CHAIN, OR } = require('./constants');
-const { isBlank } = require('./utils')
-
+import { EMPTY_CHAIN, OR } from './constants.js';
+import { isBlank } from './utils.js'
 
 /**
  * 生成式必须以空格作为分隔符，以 | 作为或，以 null 作为空串
@@ -10,7 +9,7 @@ const { isBlank } = require('./utils')
  * 
  * 无论使用哪种写法最后返回的都会合并成一项，即合并成第一种写法的格式
  */
-function splitGrammars(grammars) {
+export function splitGrammars(grammars) {
   const rules = [];
   const ruleMap = new Map(); // 用于缓存已经创建的产生式，避免重复创建相关的产生式
 
@@ -59,7 +58,7 @@ function splitGrammars(grammars) {
   return rules;
 }
 
-function toGrammars(rules, isExpand = false) {
+export function toGrammars(rules, isExpand = false) {
   const grammars = [];
 
   rules.forEach(({ left, right }) => {
@@ -98,7 +97,7 @@ function toGrammars(rules, isExpand = false) {
  *  E' -> a | b
  *  E'' -> c | d
  */
-function combineLikeTerms(rules) {
+export function combineLikeTerms(rules) {
   const mergeRight = (right) => [...right.map(grammar => [...grammar])];
   const rightToString = (right) => right.join(OR);
   const newRules = [];
@@ -227,7 +226,7 @@ function combineLikeTerms(rules) {
  *  A' -> a1A` | a2A` | ... | anA` | null
  * 
  */
-function clearLeftRecursion(rules) {
+export function clearLeftRecursion(rules) {
   const newRules = [];
 
   rules.forEach(rule => {
@@ -278,5 +277,3 @@ function clearLeftRecursion(rules) {
 
   return newRules;
 }
-
-module.exports = { splitGrammars, toGrammars, combineLikeTerms, clearLeftRecursion };

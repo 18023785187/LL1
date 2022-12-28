@@ -1,6 +1,6 @@
-const { isNotIntersect } = require('./makeSelectSet');
+import { isNotIntersect } from './makeSelectSet.js';
 
-function makePredictSet(selectSet) {
+export function makePredictSet(selectSet) {
   if (!isNotIntersect(selectSet))
     throw new Error('Select set does not satisfy the LL(1) grammar');
 
@@ -18,5 +18,3 @@ function makePredictSet(selectSet) {
 
   return predictSet;
 }
-
-module.exports = { makePredictSet };

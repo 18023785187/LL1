@@ -1,0 +1,10 @@
+.gitignore
+coverage
+lib
+examples
+scripts
+src
+test
+.babelrc
+.editorconfig
+jest.config.js

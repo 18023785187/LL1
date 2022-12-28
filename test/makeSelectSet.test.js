@@ -1,6 +1,6 @@
-const { makeSelectSet, isNotIntersect } = require('../src/makeSelectSet')
-const { splitGrammars } = require('../src/splitGrammars')
-const { $, EMPTY_CHAIN } = require('../src/constants')
+import { makeSelectSet, isNotIntersect } from '../src/makeSelectSet'
+import { splitGrammars } from '../src/splitGrammars'
+import { $, EMPTY_CHAIN } from '../src/constants'
 
 describe('test makeSelectSet.js', () => {
   test('grammar', () => {

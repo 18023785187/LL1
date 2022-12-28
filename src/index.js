@@ -1,11 +1,10 @@
-"use strict";
-
-const { splitGrammars, toGrammars, combineLikeTerms, clearLeftRecursion } = require('./splitGrammars');
-const { makeFirstSet, makeUnionFirstSet } = require('./makeFirstSet');
-const { makeFollowSet } = require('./makeFollowSet');
-const { makeSelectSet, isNotIntersect } = require('./makeSelectSet');
-const { makePredictSet } = require('./makePredictSet');
-const { EMPTY_CHAIN, $ } = require('./constants');
+// run npx babel-node index.js
+import { splitGrammars, toGrammars, combineLikeTerms, clearLeftRecursion } from './splitGrammars.js';
+import { makeFirstSet, makeUnionFirstSet } from './makeFirstSet.js';
+import { makeFollowSet } from './makeFollowSet.js';
+import { makeSelectSet, isNotIntersect } from './makeSelectSet.js';
+import { makePredictSet } from './makePredictSet.js';
+import { EMPTY_CHAIN, $ } from './constants.js';
 
 function makeLL1(grammars, terminalSymbols) {
   const rules = splitGrammars(grammars);
@@ -83,7 +82,7 @@ function makeLL1(grammars, terminalSymbols) {
   };
 }
 
-module.exports = {
+export {
   makeLL1,
   splitGrammars,
   toGrammars,

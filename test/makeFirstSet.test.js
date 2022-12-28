@@ -1,6 +1,6 @@
-const { makeFirstSet, makeUnionFirstSet } = require('../src/makeFirstSet')
-const { splitGrammars } = require('../src/splitGrammars')
-const { EMPTY_CHAIN } = require('../src/constants')
+import { makeFirstSet, makeUnionFirstSet } from '../src/makeFirstSet'
+import { splitGrammars } from '../src/splitGrammars'
+import { EMPTY_CHAIN } from '../src/constants'
 
 describe('test makeFirstSet.js', () => {
   test('single grammar', () => {

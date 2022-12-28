@@ -1,8 +1,6 @@
 # 编译原理 LL(1) 文法
 
-根据产生式求取 First、Follow、Select 集和预测分析表，附带一系列应用例子。
-
-`./examples` 目录下进入任意文件执行 `node index.js` 即可查看示例，读者也可自行编写文法规则，只要符合 LL(1) 文法的规则都可以通过构造器自动生成语法解析器（生成器目录 `./examples/SyntacticParser.js`）。
+根据产生式求取 First、Follow、Select 集和预测分析表。
 
 ```javascript
 const grammars = [ // 书写产生式是规定空格为分隔符，null 为空串

@@ -1,6 +1,6 @@
-const { makeFirstSet } = require('./makeFirstSet');
-const { mergeSet } = require('./utils');
-const { EMPTY_CHAIN, $ } = require('./constants');
+import { makeFirstSet } from './makeFirstSet.js';
+import { mergeSet } from './utils.js';
+import { EMPTY_CHAIN, $ } from './constants.js';
 
 /**
     设有式子 S -> (L) | aL | LC，规则如下：
@@ -15,7 +15,7 @@ const { EMPTY_CHAIN, $ } = require('./constants');
   2、依次遍历产生式，依序遍历产生式右边，对每个串运用规则。
   3、重复执行步骤 2，直至所有产生式均无变化。
  */
-function makeFollowSet(
+export function makeFollowSet(
   rules,
   terminalSymbols,
   firstSet = makeFirstSet(rules, terminalSymbols)
@@ -72,5 +72,3 @@ function makeFollowSet(
 
   return followSet;
 }
-
-module.exports = { makeFollowSet };

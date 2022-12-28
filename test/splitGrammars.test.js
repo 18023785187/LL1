@@ -1,5 +1,5 @@
-const { splitGrammars, toGrammars, combineLikeTerms, clearLeftRecursion } = require('../src/splitGrammars');
-const { EMPTY_CHAIN } = require('../src/constants');
+import { splitGrammars, toGrammars, combineLikeTerms, clearLeftRecursion } from '../src/splitGrammars';
+import { EMPTY_CHAIN } from '../src/constants';
 
 describe('test splitGrammars.js', () => {
   test('single grammar', () => {

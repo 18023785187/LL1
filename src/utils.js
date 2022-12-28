@@ -1,13 +1,8 @@
 
-function mergeSet(set1, set2) {
+export function mergeSet(set1, set2) {
   return new Set([...set1, ...set2]);
 }
 
-function isBlank(char) {
+export function isBlank(char) {
   return char === ' ' || char === '\t' || char === '\n' || char === '\r'
 }
-
-module.exports = {
-  mergeSet,
-  isBlank
-};

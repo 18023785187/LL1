@@ -1,7 +1,6 @@
 .gitignore
 coverage
 lib
-examples
 scripts
 src
 test

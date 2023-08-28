@@ -1,74 +1,9 @@
-(function webpackUniversalModuleDefinition(root, factory) {
-	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory();
-	else if(typeof define === 'function' && define.amd)
-		define([], factory);
-	else if(typeof exports === 'object')
-		exports["ll1"] = factory();
-	else
-		root["ll1"] = factory();
-})(this, () => {
-return /******/ (() => { // webpackBootstrap
-/******/ 	"use strict";
-/******/ 	// The require scope
-/******/ 	var __webpack_require__ = {};
-/******/ 	
-/************************************************************************/
-/******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
-/******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/make namespace object */
-/******/ 	(() => {
-/******/ 		// define __esModule on exports
-/******/ 		__webpack_require__.r = (exports) => {
-/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 			}
-/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/************************************************************************/
-var __webpack_exports__ = {};
-// ESM COMPAT FLAG
-__webpack_require__.r(__webpack_exports__);
+'use strict';
 
-// EXPORTS
-__webpack_require__.d(__webpack_exports__, {
-  "$": () => (/* reexport */ $),
-  "EMPTY_CHAIN": () => (/* reexport */ EMPTY_CHAIN),
-  "clearLeftRecursion": () => (/* reexport */ clearLeftRecursion),
-  "combineLikeTerms": () => (/* reexport */ combineLikeTerms),
-  "isNotIntersect": () => (/* reexport */ isNotIntersect),
-  "makeFirstSet": () => (/* reexport */ makeFirstSet),
-  "makeFollowSet": () => (/* reexport */ makeFollowSet),
-  "makeLL1": () => (/* binding */ makeLL1),
-  "makePredictSet": () => (/* reexport */ makePredictSet),
-  "makeSelectSet": () => (/* reexport */ makeSelectSet),
-  "makeUnionFirstSet": () => (/* reexport */ makeUnionFirstSet),
-  "splitGrammars": () => (/* reexport */ splitGrammars),
-  "toGrammars": () => (/* reexport */ toGrammars)
-});
-
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayWithHoles.js
 function _arrayWithHoles(arr) {
   if (Array.isArray(arr)) return arr;
 }
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/iterableToArrayLimit.js
+
 function _iterableToArrayLimit(arr, i) {
   var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"];
   if (null != _i) {
@@ -96,60 +31,49 @@ function _iterableToArrayLimit(arr, i) {
     return _arr;
   }
 }
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayLikeToArray.js
-function _arrayLikeToArray(arr, len) {
+
+function _arrayLikeToArray$3(arr, len) {
   if (len == null || len > arr.length) len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
   return arr2;
 }
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/unsupportedIterableToArray.js
 
-function _unsupportedIterableToArray(o, minLen) {
+function _unsupportedIterableToArray$3(o, minLen) {
   if (!o) return;
-  if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+  if (typeof o === "string") return _arrayLikeToArray$3(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor) n = o.constructor.name;
   if (n === "Map" || n === "Set") return Array.from(o);
-  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$3(o, minLen);
 }
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/nonIterableRest.js
+
 function _nonIterableRest() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/slicedToArray.js
-
-
-
 
 function _slicedToArray(arr, i) {
-  return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
+  return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray$3(arr, i) || _nonIterableRest();
 }
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayWithoutHoles.js
 
 function _arrayWithoutHoles(arr) {
-  if (Array.isArray(arr)) return _arrayLikeToArray(arr);
+  if (Array.isArray(arr)) return _arrayLikeToArray$3(arr);
 }
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/iterableToArray.js
+
 function _iterableToArray(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
 }
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/nonIterableSpread.js
+
 function _nonIterableSpread() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js
-
-
-
 
 function _toConsumableArray(arr) {
-  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
+  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray$3(arr) || _nonIterableSpread();
 }
-;// CONCATENATED MODULE: ./src/constants.js
+
 var EMPTY_CHAIN = null;
 var OR = '|';
 var $ = '$';
-;// CONCATENATED MODULE: ./src/utils.js
 
 function mergeSet(set1, set2) {
   return new Set([].concat(_toConsumableArray(set1), _toConsumableArray(set2)));
@@ -157,11 +81,6 @@ function mergeSet(set1, set2) {
 function isBlank(_char) {
   return _char === ' ' || _char === '\t' || _char === '\n' || _char === '\r';
 }
-;// CONCATENATED MODULE: ./src/splitGrammars.js
-
-
-
-
 
 /**
  * 生成式必须以空格作为分隔符，以 | 作为或，以 null 作为空串
@@ -277,7 +196,7 @@ function combineLikeTerms(rules) {
   rules.forEach(function (_ref3) {
     var left = _ref3.left,
       right = _ref3.right;
-    handleRule(left, right, new Map());
+    handleRule(left, right);
   });
   function handleRule(left, right) {
     commonSuffix.set(rightToString(right), left);
@@ -353,14 +272,12 @@ function combineLikeTerms(rules) {
           newRules.push(grammarRule);
           repeat++;
         }
-        ;
         if (!commonSuffix.has(rightToString(suffixes))) handleRule(newLeft, suffixes);
       } else {
         grammarRule.right.push(_toConsumableArray(right[i]));
         if (!isInsertRoot) {
           newRules.push(grammarRule);
         }
-        ;
       }
       isInsertRoot = true;
     }
@@ -421,10 +338,6 @@ function clearLeftRecursion(rules) {
   }
   return newRules;
 }
-;// CONCATENATED MODULE: ./src/makeFirstSet.js
-
-
-
 
 /**
   1、依次遍历所有产生式，把串首终结符加入其 FIRST 集中。
@@ -497,11 +410,6 @@ function makeUnionFirstSet(chainSet, firstSet, terminalSymbols) {
   });
   return unionFirstSet;
 }
-;// CONCATENATED MODULE: ./src/makeFollowSet.js
-
-
-
-
 
 /**
     设有式子 S -> (L) | aL | LC，规则如下：
@@ -565,15 +473,10 @@ function makeFollowSet(rules, terminalSymbols) {
   } while (isSetChanged);
   return followSet;
 }
-;// CONCATENATED MODULE: ./src/makeSelectSet.js
 
-function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = makeSelectSet_unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function makeSelectSet_unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return makeSelectSet_arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return makeSelectSet_arrayLikeToArray(o, minLen); }
-function makeSelectSet_arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-
-
-
-
+function _createForOfIteratorHelper$2(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$2(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray$2(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$2(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$2(o, minLen); }
+function _arrayLikeToArray$2(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 
 /**
   对于形似 A -> ab 的产生式，其 SELECT 集为 FIRST(ab)。
@@ -613,7 +516,7 @@ function makeSelectSet(rules, terminalSymbols) {
 }
 function isNotIntersect(selectSet) {
   var map = new Map();
-  var _iterator = _createForOfIteratorHelper(selectSet),
+  var _iterator = _createForOfIteratorHelper$2(selectSet),
     _step;
   try {
     for (_iterator.s(); !(_step = _iterator.n()).done;) {
@@ -638,16 +541,14 @@ function isNotIntersect(selectSet) {
   }
   return true;
 }
-;// CONCATENATED MODULE: ./src/makePredictSet.js
 
-function makePredictSet_createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = makePredictSet_unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function makePredictSet_unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return makePredictSet_arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return makePredictSet_arrayLikeToArray(o, minLen); }
-function makePredictSet_arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-
+function _createForOfIteratorHelper$1(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$1(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray$1(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$1(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$1(o, minLen); }
+function _arrayLikeToArray$1(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 function makePredictSet(selectSet) {
   if (!isNotIntersect(selectSet)) throw new Error('Select set does not satisfy the LL(1) grammar');
   var predictSet = new Map();
-  var _iterator = makePredictSet_createForOfIteratorHelper(selectSet),
+  var _iterator = _createForOfIteratorHelper$1(selectSet),
     _step;
   try {
     var _loop = function _loop() {
@@ -672,18 +573,10 @@ function makePredictSet(selectSet) {
   }
   return predictSet;
 }
-;// CONCATENATED MODULE: ./src/index.js
 
-function src_createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = src_unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function src_unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return src_arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return src_arrayLikeToArray(o, minLen); }
-function src_arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-// run npx babel-node index.js
-
-
-
-
-
-
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 function makeLL1(grammars, terminalSymbols) {
   var rules = splitGrammars(grammars);
   var firstSet = makeFirstSet(rules, terminalSymbols);
@@ -701,7 +594,7 @@ function makeLL1(grammars, terminalSymbols) {
       var chainSet = [];
       var indent = 2;
       var maxLength = indent;
-      var _iterator = src_createForOfIteratorHelper(predictSet),
+      var _iterator = _createForOfIteratorHelper(predictSet),
         _step;
       try {
         for (_iterator.s(); !(_step = _iterator.n()).done;) {
@@ -728,7 +621,7 @@ function makeLL1(grammars, terminalSymbols) {
       for (var _i = 0; _i < leftSet.length; ++_i) {
         result[_i + 1][0] = leftSet[_i];
       }
-      var _iterator2 = src_createForOfIteratorHelper(predictSet),
+      var _iterator2 = _createForOfIteratorHelper(predictSet),
         _step2;
       try {
         for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
@@ -737,7 +630,7 @@ function makeLL1(grammars, terminalSymbols) {
             ruleMap = _step2$value[1];
           var col = result[0].indexOf(_chain);
           var row = void 0;
-          var _iterator3 = src_createForOfIteratorHelper(ruleMap),
+          var _iterator3 = _createForOfIteratorHelper(ruleMap),
             _step3;
           try {
             for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
@@ -782,8 +675,16 @@ function makeLL1(grammars, terminalSymbols) {
   };
 }
 
-/******/ 	return __webpack_exports__;
-/******/ })()
-;
-});
-//# sourceMappingURL=ll1.js.map
+exports.$ = $;
+exports.EMPTY_CHAIN = EMPTY_CHAIN;
+exports.clearLeftRecursion = clearLeftRecursion;
+exports.combineLikeTerms = combineLikeTerms;
+exports.isNotIntersect = isNotIntersect;
+exports.makeFirstSet = makeFirstSet;
+exports.makeFollowSet = makeFollowSet;
+exports.makeLL1 = makeLL1;
+exports.makePredictSet = makePredictSet;
+exports.makeSelectSet = makeSelectSet;
+exports.makeUnionFirstSet = makeUnionFirstSet;
+exports.splitGrammars = splitGrammars;
+exports.toGrammars = toGrammars;

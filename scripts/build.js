@@ -1,23 +1,45 @@
-const path = require('path')
-const commonConfig = require('./common')
-const { merge } = require('webpack-merge')
-const TerserWebpackPlugin = require('terser-webpack-plugin')
+import { nodeResolve } from '@rollup/plugin-node-resolve' // 支持第三方模块导入
+import babel from '@rollup/plugin-babel' // 支持 babel
+import terser from "@rollup/plugin-terser"; // 压缩代码
+import { resolve } from './utils.js'
 
-module.exports = merge(commonConfig, {
-  mode: "production",
-  devtool: "source-map",
-  entry: {
-    'll1': path.resolve('./', 'src/index.js'),
-    'll1.min': path.resolve('./', 'src/index.js'),
-  },
-  optimization: {
-    usedExports: true, // 表示只导出那些外部使用了的那些成员
-    minimize: true, // 压缩模块
-    concatenateModules: true, // 合并模块
-    minimizer: [
-      new TerserWebpackPlugin({
-        include: /\.min/,
+const input = resolve('../', './src/index.js')
+
+export default [
+  // 打包正常的代码
+  {
+    input,
+    output: [
+      // cjs 格式打包
+      { file: resolve('../', "./dist/ll1.cjs"), format: "cjs" },
+      // es 格式打包
+      { file: resolve('../', "./dist/ll1.esm.js"), format: "es" },
+      // umd 格式打包
+      {
+        name: 'll1',
+        file: resolve('../', "./dist/ll1.umd.js"),
+        format: 'umd'
+      },
+      // cjs 格式打包
+      { file: resolve('../', "./dist/ll1.min.cjs"), format: "cjs", plugins: [terser()] },
+      // es 格式打包
+      { file: resolve('../', "./dist/ll1.esm.min.js"), format: "es", plugins: [terser()] },
+      // umd 格式打包
+      {
+        name: 'll1',
+        file: resolve('../', "./dist/ll1.umd.min.js"),
+        format: 'umd', plugins: [terser()]
+      }
+    ],
+    plugins: [
+      nodeResolve({
+        extensions: ['.js']
+      }),
+      babel({
+        exclude: ["node_modules/**"],
+        babelHelpers: "runtime",
+        extensions: ['.js'],
       })
     ],
   },
-})
+]

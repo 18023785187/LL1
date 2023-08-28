@@ -3,6 +3,8 @@
 根据产生式求取 First、Follow、Select 集和预测分析表。
 
 ```javascript
+import { makeLL1 } from 'll1-grammar'
+
 const grammars = [ // 书写产生式是规定空格为分隔符，null 为空串
   'E -> T E1',
   'E1 -> + T E1 | null',
